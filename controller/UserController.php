@@ -21,4 +21,7 @@ class UserController extends Controller {
         $twig = new Twig_Environment($loader);
         echo $twig->render("user_register.twig", $this->siteSettings);
     }
+    public function registerNewUser($userdata){ 
+        $this->model->registerNewUser($userdata);
+    }
 }

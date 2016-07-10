@@ -21,4 +21,4 @@ RewriteCond %{REQUEST_FILENAME} !-l
 # the original URL as further query parameters (QSA), and stop
 # processing this .htaccess file (L).
 
-RewriteRule ^(.+)$ index.php?url=$1 [QSA,L]
+RewriteRule ^(.+) index.php?url=$1 [QSA,L]

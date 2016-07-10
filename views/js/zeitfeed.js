@@ -234,14 +234,17 @@ $("document").ready(function () {
         }
     });
     $("#registerBTN").click(function () {
+        console.log("hi");
         if ($("#register-form").valid()) {
-            var data = $("#register-form").serialize() + "&type=register";
+            var data = $("#register-form").serialize();
+            console.log(data);  
             $.ajax({
-                type: "POST",
+                type: "GET",
                 dataType: "",
-                url: "inc/ajax.php",
+                url: "registerNewUser",
                 data: data,
                 success: function (data) {
+                    alert(data);
                     if (data == "1") {
                         $("#error").fadeIn(1000, function () {
                             $("#error").html('<div class="alert alert-danger">Sorry email already taken !</div>' + data);

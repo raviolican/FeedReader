@@ -44,8 +44,15 @@ class Application
             if (method_exists($this->url_controller, $this->url_action)) {
 
                 if (!empty($this->url_params)) {
-                    // Call the method and pass TWIG OBJECT
-                    call_user_func_array(array($this->url_controller, $this->url_action), $twig);
+                    // Call the method and pass TWIG OBJECT 
+                    if(get_class($this->url_controller) === "UserController"){
+                        if($this->url_action === "registerNewUser"){
+                            call_user_func_array(array($this->url_controller, $this->url_action), array($this->url_params));
+                            exit;
+                        }
+                    }
+                    call_user_func_array(array($this->url_controller, $this->url_params), $twig);
+                    
                 } else {
                     // If no parameters are given, just call the method without parameters, like $this->home->method();
                     $this->url_controller->{$this->url_action}();
@@ -72,9 +79,8 @@ class Application
      */
     private function splitUrl()
     {
-        $url = trim($_SERVER['REQUEST_URI'],"/");
+       // $url = trim($_SERVER['REQUEST_URI'],"/");
         if (isset($_GET['url'])) {
-
             // split URL
             $url = trim($_GET['url'], '/');
             $url = filter_var($url, FILTER_SANITIZE_URL);
@@ -84,24 +90,27 @@ class Application
             // @see http://davidwalsh.name/php-shorthand-if-else-ternary-operators
             $this->url_controller = isset($url[0]) ? $url[0] : null;
             if(isset($url[0])){
-                if($url[0] = "users"){
+                 
+                if($url[0] === "users"){
                     $this->url_controller = "UserController";
                 }
             } else {
+                 echo "waka";
                 $this->url_controller = NULL;
             }
             $this->url_action = isset($url[1]) ? $url[1] : null;
 
             // Remove controller and action from the split URL
             unset($url[0], $url[1]);
-
+            
             // Rebase array keys and store the URL params
-            $this->url_params = array_values($url);
+            array_shift($_GET);
+            $this->url_params = $_GET;
 
             
-            echo 'Controller: ' . $this->url_controller . '<br>';
-            echo 'Action: ' . $this->url_action . '<br>';
-            echo 'Parameters: ' . print_r($this->url_params, true) . '<br>';
+            #echo 'Controller: ' . $this->url_controller . '<br>';
+           # echo 'Action: ' . $this->url_action . '<br>';
+            #echo 'Parameters: ' . print_r($this->url_params, true) . '<br>';
         }
     }
 }
