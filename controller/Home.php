@@ -14,6 +14,7 @@
 class Home extends Controller {
     //put your code here 
     public function index($pg){ 
-        echo $pg->render('index.html', $this->siteSettings);
+        echo $pg->render('index.twig', $this->siteSettings);
+        echo $_SERVER['REQUEST_URI'];
     }
 }

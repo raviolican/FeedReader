@@ -12,9 +12,13 @@
  *
  * @author Simon
  */
-class userController extends Controller {
+class UserController extends Controller {
     //put your code here
     public function register(){
-        
+        require_once 'vendor/autoload.php';
+        Twig_Autoloader::register();
+        $loader = new Twig_Loader_Filesystem('views');
+        $twig = new Twig_Environment($loader);
+        echo $twig->render("user_register.twig", $this->siteSettings);
     }
 }
