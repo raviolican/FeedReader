@@ -1,0 +1,12 @@
+{
+    "name": "vendor/feed-reader",
+    "description": "Description of project FeedReader.",
+    "authors": [
+        {
+            "name": "Simon",
+            "email": "your@email.here"
+        }
+    ],
+    "require": {
+"twig/Twig":"1.*"}
+}
