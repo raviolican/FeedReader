@@ -22,26 +22,24 @@ class UserController extends Controller {
         echo $twig->render("user_register.twig", $this->siteSettings);
     }
     public function registerNewUser($userdata){ 
-        /*
-        print_r("<pre>");
-        print_r($userdata);
-        print_r("<pre>");
-         * */
-        // Re-check password security 6-12 chars only word and with >=1 UPPERCASE
-        // && check if eMail is an valid eMail
-        echo $userdata["g-recaptcha-response"];
-        print_r($this->model->reCaptcha($userdata["g-recaptcha-response"]));
-        /*
         if(preg_match("/^(?=.*\d)(?=.*[a-zA-Z])\w{6,12}$/i", $userdata["regInputPWD"])){
-            if(filter_var($userdata["regInputEmail"], FILTER_VALIDATE_EMAIL)){
-                $this->model->registerNewUser($userdata);
+            if ($userdata["regInputPWD"] === $userdata["regInputPWD_re"]) {
+                if(filter_var($userdata["regInputEmail"], FILTER_VALIDATE_EMAIL)){
+                    if($this->model->reCaptcha($userdata["g-recaptcha-response"]) === TRUE){
+                       $this->model->registerNewUser($userdata); 
+                    }
+                    else{
+                        echo "Captcha no valid";
+                    }
+
+                } else {
+                    echo "E-Mail not valid";
+                }
             } else {
-                echo "Password not valid";
+                echo "Password don't match"
             }
         } else {
             echo "Password is not secure enought";
         }
-         * *Ü/
-         */
     }
 }

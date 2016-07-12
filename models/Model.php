@@ -23,7 +23,6 @@ class Model {
     /**
      * Querien the site's configurations from DB 
      * @return array Site Settings
-     * @since 1.0
      */
     public function getSiteConfiguration(){
         try {
@@ -39,37 +38,42 @@ class Model {
         return $result;
     }
     /**
+     * Checks if user EXISTS in DB
+     * @param type $email
+     * @return boolean
+     */
+    private function checkUserMailExists($email){
+        try {
+            $sth = $this->dbh->prepare("SELECT * FROM `users` WHERE `email` = '$email'");
+            $sth->execute();
+            $result = $sth->rowCount();
+            if ($result === 1) {
+                return TRUE;
+            }
+            else {
+                return FALSE;
+            }
+        } catch (PDOException $ex) {
+            echo $ex->getMessage();
+        }
+        }
+    /**
      * Registers new user when credentials match
      * @param array $userdata [regInputEmail], [regInputPWD] and [regInputPWD_re]
      * @throws Exception
      */
     public function registerNewUser($userdata) {
-        try {
-            // Check if the user exists
-            $sth = $this->dbh->prepare("SELECT * FROM `users` WHERE `email` = '$userdata[regInputEmail]'");
-            $sth->execute();
-            $result = $sth->rowCount();
-            if ($result === 1) {
-                throw new Exception("User allready registered.");
-            } else {
-                if ($userdata["regInputPWD"] === $userdata["regInputPWD_re"]) {
-                    try {
-                        $hashedPWD = password_hash($userdata["regInputPWD"], PASSWORD_BCRYPT, ['cost' => 10]);
-                        $sth = $this->dbh->prepare("INSERT INTO `users`(`id`, `categories`, `email`, `np_feeds`, `password`, `privatefeed`) VALUES"
-                                . "('','hi','$userdata[regInputEmail]','NULL','$hashedPWD','NULL')");
-                        $sth->execute();
-                        echo "ok";
-                    } catch (PDOException $ex) {
-                        echo "Database Error: Couldn't Insert User: " . $ex->getMessage();
-                    }
-                } else {
-                    throw new Exception("Passwords don't match.");
-                }
+        if(!checkUserMailExists($userdata[regInputEmail])){
+            try {
+                $hashedPWD = password_hash($userdata["regInputPWD"], PASSWORD_BCRYPT, ['cost' => 10]);
+                $sth = $this->dbh->prepare("INSERT INTO `users`"
+                        . "(`id`, `categories`, `email`, `np_feeds`, `password`, `privatefeed`) "
+                        . "VALUES('','hi','$userdata[regInputEmail]','NULL','$hashedPWD','NULL')");
+                $sth->execute();
+                echo "Registration done.";
+            } catch (PDOException $ex) {
+                echo "Database Error: Couldn't Insert User: " . $ex->getMessage();
             }
-        } catch (Exception $ex) {
-            echo "Database Error: Couldn't insert user: " . $ex->getMessage();
-        } catch (PDOException $ex) {
-            echo "Database Error: Couldn't insert user: " . $ex->getMessage();
         }
     }
     /**
