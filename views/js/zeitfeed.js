@@ -5,7 +5,6 @@ $("document").ready(function () {
     myPage = "",
     loading = false;
     $("#logout").click(function () {
-        alert("hi");
         var data = "&type=logout";
         $.ajax({
             type: "POST",
@@ -208,6 +207,15 @@ $("document").ready(function () {
                 required: true,
                 email: true
             },
+            "hiddenRecaptcha": {
+                required: function() {
+                    if(grecaptcha.getResponse() == '') {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            },
             regInputPWD: {
                 required: true,
                 minlength: 5,
@@ -234,17 +242,14 @@ $("document").ready(function () {
         }
     });
     $("#registerBTN").click(function () {
-        console.log("hi");
         if ($("#register-form").valid()) {
             var data = $("#register-form").serialize();
-            console.log(data);  
             $.ajax({
                 type: "GET",
                 dataType: "",
                 url: "registerNewUser",
                 data: data,
                 success: function (data) {
-                    alert(data);
                     if (data == "1") {
                         $("#error").fadeIn(1000, function () {
                             $("#error").html('<div class="alert alert-danger">Sorry email already taken !</div>' + data);
