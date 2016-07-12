@@ -182,13 +182,14 @@ $("document").ready(function () {
     $("#loginBTN").click(function () {
         
         if ($("#login-form").valid()) {
-            var data = $("#login-form").serialize() + "&type=login";
+            var data = $("#login-form").serialize();
             $.ajax({
-                type: "POST",
+                type: "GET",
                 dataType: "",
-                url: "inc/ajax.php",
+                url: "userLogin",
                 data: data,
                 success: function (data) {  
+                    alert(data);
                     if (data == "success") {
                         location.reload();
                     }
@@ -261,6 +262,7 @@ $("document").ready(function () {
                         $(".modal-title").html("Juhu!");
                     }
                     else {
+                        grecaptcha.reset();
                         $("#error").fadeIn(1000, function () {
                             $("#error").html(data);
                         });

@@ -1,12 +1,4 @@
 <?php
-
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-
 /**
  * Description of userController
  *
@@ -21,14 +13,29 @@ class UserController extends Controller {
         $twig = new Twig_Environment($loader);
         echo $twig->render("user_register.twig", $this->siteSettings);
     }
-    public function registerNewUser($userdata){ 
-        if(preg_match("/^(?=.*\d)(?=.*[a-zA-Z])\w{6,12}$/i", $userdata["regInputPWD"])){
-            if ($userdata["regInputPWD"] === $userdata["regInputPWD_re"]) {
-                if(filter_var($userdata["regInputEmail"], FILTER_VALIDATE_EMAIL)){
-                    if($this->model->reCaptcha($userdata["g-recaptcha-response"]) === TRUE){
+    public function login(){
+        require_once 'vendor/autoload.php';
+        Twig_Autoloader::register();
+        $loader = new Twig_Loader_Filesystem('views');
+        $twig = new Twig_Environment($loader);
+        echo $twig->render("user_login.twig", $this->siteSettings);
+    }
+    public function registerNewUser($userdata){
+        // Match Password
+        if(preg_match("/^(?=.*\d)(?=.*[a-zA-Z])\w{6,12}$/i", $userdata["regInputPWD"]))
+        {
+            // Check Password  match
+            if ($userdata["regInputPWD"] === $userdata["regInputPWD_re"]) 
+            {
+                // Check  if eMail is valid
+                if(filter_var($userdata["regInputEmail"], FILTER_VALIDATE_EMAIL))
+                {
+                    //Validate Catptcha
+                    if($this->model->reCaptcha($userdata["g-recaptcha-response"]) === TRUE)
+                    {
                        $this->model->registerNewUser($userdata); 
                     }
-                    else{
+                    else {
                         echo "Captcha no valid";
                     }
 
@@ -36,10 +43,29 @@ class UserController extends Controller {
                     echo "E-Mail not valid";
                 }
             } else {
-                echo "Password don't match"
+                echo "Password don't match";
             }
         } else {
             echo "Password is not secure enought";
         }
     }
+    /**
+     * AJAX Function used for user login
+     * @param array $credentials    user-input
+     * @todo Improve security for user inputs!
+     */
+    public function userLogin($credentials){
+        // Empty Strings?
+        if($credentials["loginInputEmail"] && $credentials["loginInputPWD"] !== NULL)
+        {   // Credentials Right?
+            if($this->model->checkLogin($credentials) === TRUE)
+            {
+                echo "OK"; // TODO: COMPUTE A NEW SESSION
+            }
+            else{
+                echo "WRON CREDENTIALS";
+            }
+        }
+    }
+
 }

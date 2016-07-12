@@ -25,7 +25,6 @@ class Application
 
         // check for controller: no controller given ? then load start-page
         if (!$this->url_controller) {
-             
             require APP . 'controller/Home.php';
             
             $page = new Home();
@@ -44,11 +43,18 @@ class Application
             if (method_exists($this->url_controller, $this->url_action)) {
 
                 if (!empty($this->url_params)) {
-                    // Call the method and pass TWIG OBJECT 
-                    if(get_class($this->url_controller) === "UserController"){
+                    // Call the method and pass TWIG OBJECT  
+                    if(get_class($this->url_controller) == "UserController"){
+                         
                         if($this->url_action === "registerNewUser"){
                             call_user_func_array(array($this->url_controller, $this->url_action), array($this->url_params));
                             exit;
+                        }
+                       
+                        elseif($this->url_action === "userLogin"){
+                            call_user_func_array(array($this->url_controller, $this->url_action), array($this->url_params));
+                            exit;
+                            
                         }
                     }
                     call_user_func_array(array($this->url_controller, $this->url_params), $twig);
@@ -92,6 +98,9 @@ class Application
                  
                 if($url[0] === "users"){
                     $this->url_controller = "UserController";
+                }
+                elseif($url[0] === "userLogin"){
+                $this->url_controller = "userLogin";
                 }
             } else {
                  echo "waka";

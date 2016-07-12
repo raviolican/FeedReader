@@ -15,10 +15,18 @@ class Model {
     //put your code here
     private $database;
     function __construct($dbh) {
-         $this->dbh = $dbh; 
+        $this->dbh = $dbh;
+        $this->sessionInit();
+    }
+    /**
+     * Initializes the session
+     */
+    private function sessionInit(){
+        session_name("FERE_SESSION");
+        session_set_cookie_params(0, "/", "localhost"); // cookie delete on browser close
+        session_start();
     }
     private function __clone() {
-        
     }
     /**
      * Querien the site's configurations from DB 
@@ -63,9 +71,9 @@ class Model {
      * @throws Exception
      */
     public function registerNewUser($userdata) {
-        if(!$this->checkUserMailExists($userdata[regInputEmail])){
+        if(!$this->checkUserMailExists($userdata["regInputEmail"])){
             try {
-                $hashedPWD = password_hash($userdata["regInputPWD"], PASSWORD_BCRYPT, ['cost' => 10]);
+                $hashedPWD = password_hash($userdata["regInputPWD"], PASSWORD_BCRYPT, ['cost' => 11]);
                 $sth = $this->dbh->prepare("INSERT INTO `users`"
                         . "(`id`, `categories`, `email`, `np_feeds`, `password`, `privatefeed`) "
                         . "VALUES('','hi','$userdata[regInputEmail]','NULL','$hashedPWD','NULL')");
@@ -89,7 +97,52 @@ class Model {
         } else {
             return FALSE;
         }
+    }
+    /**
+     * Checks login credentials for true or fals
+     * @param type $credentials
+     * @return boolean  credentials right/wrong
+     * @throws Exception
+     */
+    public function checkLogin($credentials){   
+        try {
+            $sth = $this->dbh->prepare("SELECT password FROM users WHERE email ='".$credentials["loginInputEmail"]."'");
+            $sth->execute();
+            if($sth->rowCount() === 1){
+                $result = $sth->fetchAll()[0];
+                if(password_verify($credentials["loginInputPWD"], $result["password"])){
+                    return TRUE;
+                }
+                else{
+                    return FALSE;
+                }
+            }
+            else{
+                throw new Exception("User not found");
+            }
+        } catch (Exception $exc) {
+            echo "General Error: ".$exc->getTraceAsString();
+        } catch (PDOException $exc) {
+            echo "Database Error: ".$exc->getMessage();
+        }
 
+
+
+
+
+
+
+
+           /*
+        $sth = $this->dbh->prepare("SELECT password FROM users WHERE email ='".$credentials["loginInputEmail"]."'");
+        $sth->execute();
+        $num = $sth->row_count();
+        if($num != 1){echo "Error"}
+        password_verify($password, $hash);
+        */
     }
 
+    public function defineSessionParams(){
+        
+    }
 }
