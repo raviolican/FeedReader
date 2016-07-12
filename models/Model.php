@@ -56,14 +56,14 @@ class Model {
         } catch (PDOException $ex) {
             echo $ex->getMessage();
         }
-        }
+    }
     /**
      * Registers new user when credentials match
      * @param array $userdata [regInputEmail], [regInputPWD] and [regInputPWD_re]
      * @throws Exception
      */
     public function registerNewUser($userdata) {
-        if(!checkUserMailExists($userdata[regInputEmail])){
+        if(!$this->checkUserMailExists($userdata[regInputEmail])){
             try {
                 $hashedPWD = password_hash($userdata["regInputPWD"], PASSWORD_BCRYPT, ['cost' => 10]);
                 $sth = $this->dbh->prepare("INSERT INTO `users`"
