@@ -1,0 +1,31 @@
+{% extends "base.twig" %}
+{% block content %}
+    <div class="container"><br>
+        <div class="col-sm-0" style="visibility:hidden;" id="sidebarMaincon">
+            <ul class=" nav-stacked navbar-fixed-top" id="sidebar" style="text-align:center;"  >
+                <div class="logoMock">
+                    <a class="navbar-brand" href="http://edrsvc.com" style="padding-left: 0px;top:0;color:#A6929F;"> //edrsvc<br></a>
+                    <div style="clear:both;"></div>
+                </div>
+                <li class="nav-item" > 
+                    <a class="nav-link " href="http://edrsvc.com"  >Home </a>
+                </li>
+                <li class="nav-item">
+                <li class="nav-item navbar-right">
+                    <a class="nav-link usr" href="#" id="logout" >Logout</a>
+                </li>
+                <div style="position:absolute;bottom:20px;">(C) 2016 edrsvc.com<br>impressum</div>
+            </ul>
+        </div>
+        <div class="col-sm-12" id="maincon">
+            <div class="card-deck-wrapper">
+                <div class="wan" id="wan">
+                    <!-- feeds -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" class="index_c">
+        <?php echo _("Welcome")?> {{ email }}
+    </div><!-- /container -->
+{% endblock %}

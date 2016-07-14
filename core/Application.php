@@ -19,7 +19,8 @@ class Application
         require_once 'vendor/autoload.php';
         Twig_Autoloader::register();
         $loader = new Twig_Loader_Filesystem('views');
-        $twig = new Twig_Environment($loader);
+        $twig = new Twig_Environment($loader,array('debug' => true));
+
         // create array with URL parts in $url
         $this->splitUrl();
 
@@ -56,6 +57,10 @@ class Application
                             exit;
                             
                         }
+                        elseif($this->url_action === "setLanguage"){
+                            call_user_func_array(array($this->url_controller, $this->url_action), array($this->url_params));
+                            exit;
+                        }
                     }
                     call_user_func_array(array($this->url_controller, $this->url_params), $twig);
                     
@@ -90,17 +95,13 @@ class Application
             $url = trim($_GET['url'], '/');
             $url = filter_var($url, FILTER_SANITIZE_URL);
             $url = explode('/', $url);
-            // Put URL parts into according properties
-            // By the way, the syntax here is just a short form of if/else, called "Ternary Operators"
-            // @see http://davidwalsh.name/php-shorthand-if-else-ternary-operators
+           
+            
             $this->url_controller = isset($url[0]) ? $url[0] : null;
             if(isset($url[0])){
                  
                 if($url[0] === "users"){
                     $this->url_controller = "UserController";
-                }
-                elseif($url[0] === "userLogin"){
-                $this->url_controller = "userLogin";
                 }
             } else {
                  echo "waka";

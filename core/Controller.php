@@ -15,13 +15,20 @@ class Controller {
     //put your code here
     public $dbh = NULL;
     public $model = NULL;
-    public $siteSettings = array();
+    public $siteSettings; 
+    static $lang;
     
-    function __construct() { 
-        $this->openDBConnection();
-        $this->loadModel();
+    function __construct() {  
+         
+        // First things first
+        $this->openDBConnection();   
+        $this->loadModel(); 
+        // Load the prefered language
+        require_once 'c://xampp/htdocs/FeedReader/locale/'.$_SESSION["language"].'.php';
+ 
+         
+        // Generating expirience
         $this->siteSettings = $this->model->getSiteConfiguration();
-        
     }
     private function openDBConnection(){
         

@@ -8,5 +8,7 @@
         }
     ],
     "require": {
-"twig/Twig":"1.*"}
+		"twig/Twig":"1.*",
+        "twig/extensions": "^1.3"
+	}
 }

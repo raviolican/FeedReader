@@ -9,13 +9,15 @@ $("document").ready(function () {
         $.ajax({
             type: "POST",
             dataType: "",
-            url: "ajax.php",
+            url: "users/performLougout",
             data: data,
             beforeSend: function () {},
             success: function (data) {
-                alert(data);
                 if (data == "success") {
-                    window.location = "http://edrsvc.com";
+                    location.reload();
+                }
+                else{
+                    alert(data);
                 }
             }
         });
@@ -35,6 +37,18 @@ $("document").ready(function () {
     $(window).load(function () {
         loadHomePage(page, 3);
         page = 3;
+    });
+    $("#selectLanguage").on("change", function(){
+       data = $(this).serialize();
+       $.ajax({
+           type: "get",
+           dataType:"",
+           url:"http://localhost/FeedReader/users/setLanguage",
+           data: data,
+           success: function(data){
+               location.reload();
+           }
+       });
     });
     function loadHomePage(start, end) {
         myPage = "home";
@@ -188,14 +202,9 @@ $("document").ready(function () {
                 dataType: "",
                 url: "userLogin",
                 data: data,
-                success: function (data) {  
+                success: function (data) {
                     alert(data);
-                    if (data == "success") {
                         location.reload();
-                    }
-                    else{
-                        alert("Keine Benutzer mit diesen Daten gefunden");
-                    }
                 }
             });
             return false;
@@ -251,17 +260,21 @@ $("document").ready(function () {
                 url: "registerNewUser",
                 data: data,
                 success: function (data) {
+                    alert(data);
                     if (data == "1") {
+                        alert("if");
                         $("#error").fadeIn(1000, function () {
                             $("#error").html('<div class="alert alert-danger">Sorry email already taken !</div>' + data);
                         });
                     }
                     else if (data == "success") {
+                        alert("else if");
                         $(".modal-footer").html('<button type="button" class="btn btn-secondary" data-dismiss="modal">Schliessen</button>');
                         $(".modal-body").html("<p>Sie können sich nun einloggen!</p>");
                         $(".modal-title").html("Juhu!");
                     }
                     else {
+                        alert("else");
                         grecaptcha.reset();
                         $("#error").fadeIn(1000, function () {
                             $("#error").html(data);

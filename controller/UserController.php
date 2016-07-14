@@ -5,48 +5,52 @@
  * @author Simon
  */
 class UserController extends Controller {
-    //put your code here
+    /**
+     * Loads registration template
+     */
     public function register(){
+        $this->model->isLoggedInPerformRedirect();
         require_once 'vendor/autoload.php';
         Twig_Autoloader::register();
-        $loader = new Twig_Loader_Filesystem('views');
+        $loader = new Twig_Loader_Filesystem( $_SERVER['DOCUMENT_ROOT'].'/FeedReader/views');
         $twig = new Twig_Environment($loader);
-        echo $twig->render("user_register.twig", $this->siteSettings);
-    }
-    public function login(){
-        require_once 'vendor/autoload.php';
-        Twig_Autoloader::register();
-        $loader = new Twig_Loader_Filesystem('views');
-        $twig = new Twig_Environment($loader);
-        echo $twig->render("user_login.twig", $this->siteSettings);
-    }
-    public function registerNewUser($userdata){
-        // Match Password
-        if(preg_match("/^(?=.*\d)(?=.*[a-zA-Z])\w{6,12}$/i", $userdata["regInputPWD"]))
-        {
-            // Check Password  match
-            if ($userdata["regInputPWD"] === $userdata["regInputPWD_re"]) 
-            {
-                // Check  if eMail is valid
-                if(filter_var($userdata["regInputEmail"], FILTER_VALIDATE_EMAIL))
-                {
-                    //Validate Catptcha
-                    if($this->model->reCaptcha($userdata["g-recaptcha-response"]) === TRUE)
-                    {
-                       $this->model->registerNewUser($userdata); 
-                    }
-                    else {
-                        echo "Captcha no valid";
-                    }
 
-                } else {
-                    echo "E-Mail not valid";
-                }
-            } else {
-                echo "Password don't match";
-            }
-        } else {
-            echo "Password is not secure enought";
+        echo $twig->render("user_register.twig", array_merge($this->siteSettings,["language" => $_SESSION["language"]],  Controller::$lang));
+    }
+    /**
+     * Loads login template
+     */
+    public function login(){
+        $this->model->isLoggedInPerformRedirect();
+        require_once 'vendor/autoload.php';
+        Twig_Autoloader::register();
+        $loader = new Twig_Loader_Filesystem( $_SERVER['DOCUMENT_ROOT'].'/FeedReader/views');
+        $twig = new Twig_Environment($loader);
+        echo $twig->render("user_login.twig", array_merge($this->siteSettings,["language" => $_SESSION["language"]],   Controller::$lang));
+
+    }
+    /**
+     * Registers a new user 
+     * @param array $userdata propagated with e-mail, password
+     * @return type
+     */
+    public function registerNewUser($userdata){
+        // Check if password is NOT valid
+        if(!static::passwordValidate($userdata["regInputPWD"],$userdata["regInputPWD_re"])){; 
+            return;
+        }
+        // Check if eMail is not valid
+        if(!filter_var($userdata["regInputEmail"], FILTER_VALIDATE_EMAIL))
+        {
+            echo("The E-Mail adress you've entered seems not be be valid");
+            return;
+        }
+        // Does an reCaptcha check and performs the registration if valid
+        if($this->model->reCaptcha($userdata["g-recaptcha-response"]) === TRUE){
+            $this->model->registerNewUser($userdata); 
+        }
+        else {
+            echo("The Anti-Bot verification you've entered is not valid.");
         }
     }
     /**
@@ -60,12 +64,44 @@ class UserController extends Controller {
         {   // Credentials Right?
             if($this->model->checkLogin($credentials) === TRUE)
             {
-                echo "OK"; // TODO: COMPUTE A NEW SESSION
+                $this->model->defineSessionParams($credentials["loginInputEmail"]);
             }
             else{
-                echo "WRON CREDENTIALS";
+                echo _("Username or Password wrong");
             }
         }
+    }
+    /**
+     * Routes to the right correct Model Function
+     */
+    public function performLougout(){
+        // Performing the logOut
+        $this->model->performLougout(); 
+    }
+    /**
+     * Checks if the password if valid 
+     * @param type $password    password entered by user
+     * @param type $password_re password verification
+     * @return boolean password valid?
+     */
+    private static function passwordValidate($password,$password_re){
+        if(!preg_match("/^(?=.*\d)(?=.*[a-zA-Z])\w{6,12}$/i", $password)){
+            echo _("The password you've entered is not secure enought");
+            return FALSE;
+        }
+        if ($password != $password_re){
+            echo _("Your passwords don't match");
+            return FALSE;
+        }
+        return TRUE;
+    }
+    /**
+     * Sets the language key in the session
+     * @param string $lang language code eg de_AT
+     */
+    public function setLanguage($lang){
+        print_r($lang);
+        Model::setSessionLanguage($lang["selectLanguage"]);
     }
 
 }

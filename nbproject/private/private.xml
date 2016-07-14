@@ -6,12 +6,14 @@
             <file>file:/C:/xampp/htdocs/FeedReader/index.php</file>
             <file>file:/C:/xampp/htdocs/FeedReader/models/Model.php</file>
             <file>file:/C:/xampp/htdocs/FeedReader/controller/Home.php</file>
+            <file>file:/C:/xampp/htdocs/FeedReader/controller/FeedReader.php</file>
             <file>file:/C:/xampp/htdocs/FeedReader/views/js/zeitfeed.js</file>
             <file>file:/C:/xampp/htdocs/FeedReader/core/Controller.php</file>
+            <file>file:/C:/xampp/htdocs/FeedReader/views/index.twig</file>
             <file>file:/C:/xampp/htdocs/FeedReader/core/Application.php</file>
-            <file>file:/C:/xampp/htdocs/FeedReader/views/user_register.twig</file>
+            <file>file:/C:/xampp/htdocs/FeedReader/views/base.twig</file>
             <file>file:/C:/xampp/htdocs/FeedReader/controller/UserController.php</file>
-            <file>file:/C:/xampp/htdocs/FeedReader/.htaccess</file>
+            <file>file:/C:/xampp/htdocs/FeedReader/locale/de_AT.php</file>
         </group>
     </open-files>
 </project-private>

@@ -15,8 +15,10 @@ class Model {
     //put your code here
     private $database;
     function __construct($dbh) {
+        
         $this->dbh = $dbh;
         $this->sessionInit();
+        
     }
     /**
      * Initializes the session
@@ -25,6 +27,24 @@ class Model {
         session_name("FERE_SESSION");
         session_set_cookie_params(0, "/", "localhost"); // cookie delete on browser close
         session_start();
+        // Prevents session fixation
+        if(!isset($_SESSION["initiated"])){
+            session_regenerate_id();
+            $_SESSION["initiated"] = TRUE; 
+        }
+        // Check for valid user agent to prevent session hijacking
+        if(isset($_SESSION["HTTP_USER_AGENT"])){
+            if($_SESSION["HTTP_USER_AGENT"] != md5($_SERVER["HTTP_USER_AGENT"])){
+                exit;
+            }
+        }
+        else{
+            $_SESSION["HTTP_USER_AGENT"] = md5($_SERVER["HTTP_USER_AGENT"]);
+        }
+    }
+    public static function setSessionLanguage($language){
+        $_SESSION["language"] = $language;
+        clearstatcache();
     }
     private function __clone() {
     }
@@ -36,7 +56,7 @@ class Model {
         try {
             $sth = $this->dbh->prepare("SELECT * FROM site_settings");
             $sth->execute();
-            $result = $sth->fetchAll()[0];
+            $result = (array)$sth->fetchAll(PDO::FETCH_CLASS)[0];
             
         } catch (PDOException  $e) { 
             echo "Database Error: Couldn't retrieve settings.<br>".$e->getMessage();
@@ -82,6 +102,8 @@ class Model {
             } catch (PDOException $ex) {
                 echo "Database Error: Couldn't Insert User: " . $ex->getMessage();
             }
+        } else {
+            echo _("E-Mail is already in use by another user");
         }
     }
     /**
@@ -108,7 +130,7 @@ class Model {
         try {
             $sth = $this->dbh->prepare("SELECT password FROM users WHERE email ='".$credentials["loginInputEmail"]."'");
             $sth->execute();
-            if($sth->rowCount() === 1){
+            if($sth->rowCount() === 1){ 
                 $result = $sth->fetchAll()[0];
                 if(password_verify($credentials["loginInputPWD"], $result["password"])){
                     return TRUE;
@@ -125,24 +147,35 @@ class Model {
         } catch (PDOException $exc) {
             echo "Database Error: ".$exc->getMessage();
         }
-
-
-
-
-
-
-
-
-           /*
-        $sth = $this->dbh->prepare("SELECT password FROM users WHERE email ='".$credentials["loginInputEmail"]."'");
-        $sth->execute();
-        $num = $sth->row_count();
-        if($num != 1){echo "Error"}
-        password_verify($password, $hash);
-        */
     }
-
-    public function defineSessionParams(){
-        
+    /**
+     * Defining session params
+     * @todo maybe use param as array and set session vars by loop
+     *       improved re-use-ability
+     */
+    public function defineSessionParams($param){
+        $_SESSION["email"] = $param;
+        echo "success";
+    }
+    /**
+     * Starting a logout by destroying session and unset $_session vars
+     * @throws LogOut exception
+     */
+    public function performLougout(){
+        try {
+            session_destroy();
+            unset($_SESSION);
+            echo "success";
+        } catch (Exception $exc) {
+            echo $exc->getTraceAsString();
+        }
+        }
+    /**
+     * Performing a redirect, IF the user is logged in
+     */
+    public static function isLoggedInPerformRedirect(){
+        if(isset($_SESSION["email"])){
+            header("location: ../");
+        }
     }
 }
