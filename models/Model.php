@@ -178,4 +178,44 @@ class Model {
             header("location: ../");
         }
     }
+    /**
+     * Creates a sorted array with users feeds
+     * @return array Users feeds with category names as keys and feeds as value
+     */
+    public function getUserFeeds(){
+        $FEED_CATEGORIZED = ARRAY(); // We return this, after we builT it
+        // Selecting user's feeds from the DB
+        $sth = $this->dbh->prepare("SELECT privatefeed FROM users WHERE email ='".$_SESSION["email"]."'");
+        $sth->execute();
+        // Creating an assoc _ARRAY_ with the feteched result
+        $result = json_decode($sth->fetchAll()[0]["privatefeed"],true);
+        
+        // Defining a new array to srore it like
+        // [category_1] => [FEED_NAME] =>category_1,[FEED_NAME] => category_1
+        // [category_2] => [FEED_NAME] =>category_2,[FEED_NAME] => category_2
+        $categorizedArray = array();
+        foreach ($result as $res => $val) {
+                $categorizedArray[$val["category"]][$res] = $val["category"];
+        }
+        
+        // Now query the users categories
+        $sth = $this->dbh->prepare("SELECT categories FROM users WHERE email ='".$_SESSION["email"]."'");
+        $sth->execute();
+        $result = json_decode($sth->fetchAll()[0]["categories"],true); // same above
+        
+        // Looping throught each category
+        foreach($result AS $ID => $NAME){
+            // Checks if the user has feed names defined in the category["CATEGORY_NAME" => $NAME]
+            if(isset($categorizedArray[$ID])){
+                // If so, create a new array key and put the feednames inside.
+                $FEED_CATEGORIZED[$NAME] = ARRAY();
+                $FEED_CATEGORIZED[$NAME] = array_merge($FEED_CATEGORIZED[$NAME],$categorizedArray[$ID]);
+            } else {
+                // DEBUG echo "NAN";
+                // User has no feeds defined in the category
+            }
+        }
+        // there we go
+        return $FEED_CATEGORIZED;
+    }
 }

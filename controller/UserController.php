@@ -29,13 +29,15 @@ class UserController extends Controller {
         echo $twig->render("user_login.twig", array_merge($this->siteSettings,["language" => $_SESSION["language"]],   Controller::$lang));
 
     }
+    /*
+     * Loads user settings template
+     */
     public function settings(){ 
         require_once 'vendor/autoload.php';
         Twig_Autoloader::register();
         $loader = new Twig_Loader_Filesystem( $_SERVER['DOCUMENT_ROOT'].'/FeedReader/views');
         $twig = new Twig_Environment($loader);
-
-        echo $twig->render("user_settings.twig", array_merge($this->siteSettings,['email'=>$_SESSION["email"],"language" => $_SESSION["language"]],  Controller::$lang));
+        echo $twig->render("user_settings.twig",array_merge($this->siteSettings,["user_feeds" => $this->model->getUserFeeds(), 'email'=>$_SESSION["email"],"language" => $_SESSION["language"]],  Controller::$lang));
     }
     /**
      * Registers a new user 
@@ -111,4 +113,9 @@ class UserController extends Controller {
         print_r($lang);
         Model::setSessionLanguage($lang["selectLanguage"]);
     }
+    
+    
+    
+    
+    
 }
