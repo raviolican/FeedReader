@@ -36,8 +36,11 @@
                     <li class="nav-item"> 
                         {%if email is defined %}
                         <li class="nav-item navbar-right">
+                            <a class="nav-link usr" href="users/settings" >{{email}}</a>
+                        </li>
+                        <li class="nav-item navbar-right">
                             <a class="nav-link usr" href="#" id="logout" >Logout</a>
-                    </li>
+                        </li>
                        {% else %}
                         <li class="nav-item navbar-right">
                             <a class="nav-link usr" href="http://localhost/FeedReader/users/login"  >{{LOGIN}}</a>
@@ -60,19 +63,26 @@
             {% block content %}{% endblock %}
         </div>
         <div id="footer">
-            {{language}}
-            {% block footer %}
-                {% set foo = {'Deutsch': 'de_AT','English':'en_GB'} %}
-                <select name="selectLanguage" id="selectLanguage">
-                {% for key,value in foo %}
-                    {% if language == value%}
-                        <option value="{{ value }}" selected="selected">{{ key }}</option>
-                    {% else %}
-                        <option value="{{ value }}">{{ key }}</option>
-                    {% endif %}
-                {% endfor %}
-                </select>
-            {% endblock %}
+            <div class="container-fluid footer">
+                <div class="row">
+                    <div class="col-sm-6">
+                    {% block footer %}
+                        {% set foo = {'Deutsch': 'de_AT','English':'en_GB'} %}
+                        <select name="selectLanguage" id="selectLanguage"  class="c-select">
+                        {% for key,value in foo %}
+                            {% if language == value%}
+                                <option value="{{ value }}" selected="selected">{{ key }}</option>
+                            {% else %}
+                                <option value="{{ value }}">{{ key }}</option>
+                            {% endif %}
+                        {% endfor %}
+                        </select>
+                    {% endblock %}
+                    </div>
+                    <div class="col-sm-6">
+                    </div>  
+                </div>
+            </div>
         </div>
     </body>
 </html>

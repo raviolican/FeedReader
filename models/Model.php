@@ -18,7 +18,6 @@ class Model {
         
         $this->dbh = $dbh;
         $this->sessionInit();
-        
     }
     /**
      * Initializes the session
@@ -30,6 +29,7 @@ class Model {
         // Prevents session fixation
         if(!isset($_SESSION["initiated"])){
             session_regenerate_id();
+             $_SESSION["language"] = "de_AT";
             $_SESSION["initiated"] = TRUE; 
         }
         // Check for valid user agent to prevent session hijacking

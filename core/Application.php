@@ -75,13 +75,16 @@ class Application
                     $this->url_controller->index();
                 }
                 else {
-                   // header('location: ' . URL . 'error');
-                    echo "404";
+                    // Handling not found error
+                    $contr = new Controller();
+                    $contr->err404();
+                    
                 }
             }
         } else {
-           // header('location: ' . URL . 'error');
-            echo "404";
+            // Handling not found error
+            $contr = new Controller();
+            $contr->err404();
         }
     }
 

@@ -59,6 +59,13 @@ $lang["REGISTER_INFORMATION"] = "Anmeldung nach der Registration sofort "
         . "vertrauenswürdig und mit Sorgfalt behandelt.";
 
 
+/*
+ * Feedback
+ */
+$lang["ERR404MSG"] = "Hier ist absolut garnichts";
+$lang["WELCOME"] = "Willkommen";
+
+
 
 Controller::$lang = $lang;
         

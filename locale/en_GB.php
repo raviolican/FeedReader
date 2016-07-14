@@ -59,5 +59,12 @@ $lang["REGISTER_INFORMATION"] = "Login after registration possible immediately,"
         . " no activation of your email needed. Your e-mail will be treated"
         . " confidentially and with care.";
 
+/*
+ * Feedback
+ */
+$lang["ERR404MSG"] = "There is exactly nothing.";
+$lang["WELCOME"] = "Welcome";
+
+
 Controller::$lang = $lang;
 ?>

@@ -22,13 +22,13 @@
 }
 html {
     
-    font-family: 'Merriweather', serif;
+    font-family: 'Arial', serif;
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
      
 }
 body {
-	background-color: #F0F2EB !important;
+    background-color: #F0F2EB !important;
     padding-top: 70px; 
     margin: 0
 }
@@ -5732,4 +5732,19 @@ ol{
 	text-align: center;
 	margin: 0 auto;
 	font-size: 40px;
+}
+
+
+.footer{
+     
+    padding: 10px;
+    background-color: rgb(212,238,94);
+}
+.footer p{
+    margin-right: 10px;
+    text-align: right;
+}
+.center-col{
+    float: none;
+    margin: 0 auto;   
 }
