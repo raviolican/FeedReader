@@ -41,24 +41,24 @@ $("document").ready(function () {
         }
     });
     $("#sendFeed").click(function () {
-        if ($("#addFeed-form").valid()) {
+       // if ($("#addFeed-form").valid()) {
             $("#error").html("Überprüfen...");
-            var data = $("#addFeed-form").serialize() + "&type=addFeed";
+            var data = $("#addFeed-form").serialize();
             $.ajax({
-                type: "POST",
+                type: "GET",
                 dataType: "",
-                url: "inc/ajax.php",
+                url: "addUserFeed",
                 data: data,
                 success: function (data) {
                     if(data == "added"){
                         $("#error").html("Hinzugefügt");  
                     }
                     else{
-                        $("#error").html("Fehler:<br>"+data);
+                        $("#error").html(data);
                     }
                 }
             });
-        }
+       // }
     });
     
     $("#addCategory-form").validate({
@@ -76,11 +76,11 @@ $("document").ready(function () {
     $("#sendCategory").click(function () {
         if($("#addCategory-form").valid()){
             $("#error_cat").html("Überprüfen...");
-            var data = $("#addCategory-form").serialize() + "&type=addCategory";
+            var data = $("#addCategory-form").serialize();
             $.ajax({
-                type: "POST",
+                type: "GET",
                 dataType: "",
-                url: "inc/ajax.php",
+                url: "addCategory",
                 data: data,
                 success: function (data) {
                     $("#error_cat").html(data);

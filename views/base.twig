@@ -31,12 +31,19 @@
                     <li class="nav-item" >
                         <a class="nav-link " href="http://localhost/FeedReader/"  >{{HOMEPAGE}} </a>
                     </li> 
+                    {% if categories is defined %}
+                        {% for key,value in categories %}
+                            <li class="nav-item" >
+                                <a class="nav-link " href="http://localhost/FeedReader/feeds/r/{{ key }}"  >{{value}} </a>
+                            </li> 
+                        {% endfor %}
+                    {% endif %}
                 </ul>
                 <ul class="nav navbar-nav pull-xs-right">
                     <li class="nav-item"> 
                         {%if email is defined %}
                         <li class="nav-item navbar-right">
-                            <a class="nav-link usr" href="users/settings" >{{email}}</a>
+                            <a class="nav-link usr" href="http://localhost/FeedReader/users/settings" >{{email}}</a>
                         </li>
                         <li class="nav-item navbar-right">
                             <a class="nav-link usr" href="#" id="logout" >Logout</a>

@@ -178,6 +178,11 @@ class Model {
             header("location: ../");
         }
     }
+    public  function is_NOT_LoggedInPerformRedirect(){
+        if(!isset($_SESSION["email"])){
+            header("location: ../");
+        }
+    }
     /**
      * Creates a sorted array with users feeds
      * @return array Users feeds with category names as keys and feeds as value
@@ -194,14 +199,13 @@ class Model {
         // [category_1] => [FEED_NAME] =>category_1,[FEED_NAME] => category_1
         // [category_2] => [FEED_NAME] =>category_2,[FEED_NAME] => category_2
         $categorizedArray = array();
-        foreach ($result as $res => $val) {
-                $categorizedArray[$val["category"]][$res] = $val["category"];
+        
+        foreach ($result as $res => $val) {// </editor-fold>
+                            $categorizedArray[$val["category"]][$res] = $val["category"];
         }
         
         // Now query the users categories
-        $sth = $this->dbh->prepare("SELECT categories FROM users WHERE email ='".$_SESSION["email"]."'");
-        $sth->execute();
-        $result = json_decode($sth->fetchAll()[0]["categories"],true); // same above
+        $result = $this->db_selectCategories();
         
         // Looping throught each category
         foreach($result AS $ID => $NAME){
@@ -220,25 +224,16 @@ class Model {
     }
     /**
      * Deletes a feed and updates table
-     * @param type $feedName
+     * @param string $feedName Name of the feed
      * @throws Exception
      */
     public function deleteUserFeed($feedName) {
         // First get the feeds and create an assoc array
-        try {
-            $sth = $this->dbh->prepare("SELECT privatefeed FROM users WHERE email = ?");
-            $sth->execute(array($_SESSION["email"]));
-            $result = json_decode($sth->fetchAll()[0]["privatefeed"],true);
-        } catch (Exception $exc) {
-            echo $exc->getTraceAsString();
-        } catch (PDOException $exc) {
-            echo $exc->getMessage();
-        }
+        $result = $this->db_selectUserFeeds();
         // unset the perefered feedname in the array
         unset($result[$feedName]);
         // creating json
         $newJSON = json_encode($result);
-        
         
         // updatiing the clolumn
         try {
@@ -256,4 +251,145 @@ class Model {
             echo $exc->getTraceAsString();
         }
     }
+    
+    /**
+     * 
+     * @param array $feedData Entered feed data from user
+     * @return type
+     */
+    public function addUserFeed($feedData){
+        // validade the feet by API
+        $valid = $this->validateFeed($feedData["feedUrl"]);
+        if($valid){ // $valid
+            $result = $this->db_selectUserFeeds();
+            
+            // Check for duplicates
+            foreach ($result as $key => $value) {
+                if($key === $feedData["feedName"]){
+                    echo "A feed with given name already exists";
+                    return;
+                }
+                if($value["url"] === $feedData["feedUrl"]){
+                    echo "A feed with given URL already exists.";
+                    return;
+                }
+            }
+            // Assign the new feed to the old
+            $result[$feedData["feedName"]] = [
+                "url" => $feedData["feedUrl"],
+                "category" => $feedData["category"]
+            ];
+            // generate the JSON
+            $newJSON = json_encode($result);
+            
+            try { // Update the table
+                $sth = $this->dbh->prepare("UPDATE users SET privatefeed=? WHERE email=?");
+                $affected = $sth->execute(array($newJSON,$_SESSION["email"]));
+                echo "succes";
+            } catch (Exception $exc) {
+                echo $exc->getTraceAsString();
+            } catch (PDOException $exc) {
+                echo $exc->getTraceAsString();
+            }  
+        }
+        else{
+            echo "The URL you've entered seems not to be valid";
+            return;
+        }
+        //validateFeed
+    }
+    /**
+     * Returns the categories of the user as array
+     * @return array all user categories
+     */
+    public function getUserCategories(){
+            return $this->db_selectCategories();
+    }
+    /**
+     * Sets a new user feed category when it does not already exist
+     * @param string $categoriyName
+     * @return string
+     */
+    public function setUserCategory($categoriyName){ 
+        $result = $this->db_selectCategories();
+        
+        if (!in_array($categoriyName, $result)) {
+            $result[] = $categoriyName;
+            $newJSON = json_encode($result);
+            try {
+                $sth = $this->dbh->prepare("UPDATE users SET categories=? WHERE email=?");
+                $affected = $sth->execute(array($newJSON,$_SESSION["email"]));
+                return "success";
+            } catch (Exception $exc) {
+                return $exc->getTraceAsString();
+            } catch (PDOException $exc) {
+                return $exc->getTraceAsString();
+            }
+        }
+        else {
+            return "Category already exists";
+        }
+    }
+
+    
+    /**
+     * Selects categories and returns array
+     * @return array the selected categorie
+     */
+    private function db_selectCategories(){
+          try {
+            $sth = $this->dbh->prepare("SELECT categories FROM users WHERE email = ?");
+            $obj = $sth->execute(array($_SESSION["email"]));
+            $result = json_decode($sth->fetchAll()[0]["categories"],true);
+            
+        } catch (Exception $exc) {
+            echo $exc->getTraceAsString();
+        } catch (PDOException $exc) {
+            echo $exc->getTraceAsString();
+        }
+        return $result;
+    }
+    /**
+     * Selects user's feeds and returns them in ARRAY
+     * @return array all feeds
+     */
+    private function db_selectUserFeeds(){
+        try {
+            $sth = $this->dbh->prepare("SELECT privatefeed FROM users WHERE email = ?");
+            $sth->execute(array($_SESSION["email"]));
+            $result = json_decode($sth->fetchAll()[0]["privatefeed"],true);
+        } catch (Exception $exc) {
+            echo $exc->getTraceAsString();
+        } catch (PDOException $exc) {
+            echo $exc->getMessage();
+        }
+        return $result;
+    }
+    /**
+     * Verifiess a valid URL
+     * @param string $rssFeedURL The URL that needs to be tested
+     * @return boolean
+     */
+    private function validateFeed($rssFeedURL) {
+        if (!filter_var($rssFeedURL, FILTER_VALIDATE_URL) === false) {
+            return true;
+        } else {
+            return false;
+        }
+        $rssValidator = 'http://feedvalidator.org/check.cgi?url=';
+        if ($rssValidationResponse = file_get_contents($rssValidator . urlencode($rssFeedURL))) {
+            if (stristr($rssValidationResponse, 'This is a valid RSS feed') !== false) {
+                return true;
+            } else {
+                return false; // must be:false
+            }
+        } else {
+            return false; // must be:false
+        }
+       
+    }
+    /* =========================================================================
+     *                         _._ FEED READER _._
+     * =========================================================================
+     */
 }

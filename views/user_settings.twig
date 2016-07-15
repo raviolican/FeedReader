@@ -14,6 +14,100 @@
                 {% endfor %}
             {% endfor %}
             </ul>
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">Eigener Feed</button>
+
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModalCategory">Kategorie definieren</button>
         </div>
+            
+            
+        <!-- MODAL TO ADD A FEED -->
+        <div class="modal fade" id="myModal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">Einen Feed hinzufügen</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form class="addFeed-form" method="post" id="addFeed-form">
+                            Dein Feed wird in der list im Kontrollzentrum angezeigt.
+                            <fieldset class="form-group">
+                                <label for="feedName">Feed Name*</label>
+                                <input type="text" class="form-control" id="feedName" name="feedName" placeholder="Mein Feed">
+                            </fieldset>
+                            <fieldset class="form-group">								
+                                <label for="feedUrl">Feed URL*</label>
+                                <input type="text" class="form-control" id="feedUrl" name="feedUrl" placeholder="example.com/feed">
+                            </fieldset>
+                            <fieldset>
+                                <label for="category">Kategorie wählen:</label>
+                                <select name="category" id="category">
+                                    {# Creates the options for select #}
+                                    {%for key , value in categories%}
+                                        <option value="{{ key }}">{{ value }}</option>
+                                    {% endfor %}
+                                </select>
+                            </fieldset>
+                            <fieldset class="form-group" id="sendbtnFS">
+                                <button type="button" class="submit" name="submit" value="sendFeed" id="sendFeed">
+                                    Abschicken
+                                </button> 
+                            </fieldset>
+                            <div id="error">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <p style="text-align: left;">
+                            <small>
+                                *Pflichtfelder
+                            </small>
+                        </p>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+        <!-- /.MODAL TO ADD A FEED -->
+        
+        <!-- MODAL TO ADD CATEGORY -->
+        <div class="modal fade" id="myModalCategory">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">Einen Kategorie definieren</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form class="addCategory-form" method="post" id="addCategory-form">
+                            Definiere Kategorien um deine Feeds zu ordnen!
+                            <fieldset class="form-group">
+                                <label for="categoryName">Name der Kategorie*</label>
+                                <input type="text" class="form-control" id="categoryName" name="categoryName" placeholder="Beispielkategorie">
+                            </fieldset>
+                            <fieldset class="form-group" id="sendbtnFS">
+                                <button style="float:right;"type="button" class="submit" name="submit" value="sendCategory" id="sendCategory">Abschicken!</button> 
+                            </fieldset>
+                            <div id="error_cat">
+                            </div>
+                        </form>
+
+                    </div>
+                    <div class="modal-footer">
+                        <p style="text-align: left;">
+                            <small>
+                                *Pflichtfelder
+                            </small>
+                        </p>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+        <!-- /.MODAL TO ADD CATEGORY -->
+        
     </div><!-- /container -->
+    <!-- --><!-- --><!-- --><!-- --><!-- --><!-- --><!-- -->
 {% endblock %}

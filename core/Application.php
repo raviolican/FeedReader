@@ -46,31 +46,46 @@ class Application
                 if (!empty($this->url_params)) {
                     // Call the method and pass TWIG OBJECT  
                     if(get_class($this->url_controller) == "UserController"){
-                         
-                        if($this->url_action === "registerNewUser"){
-                            call_user_func_array(array($this->url_controller, $this->url_action), array($this->url_params));
-                            exit;
-                        }
-                       
-                        elseif($this->url_action === "userLogin"){
-                            call_user_func_array(array($this->url_controller, $this->url_action), array($this->url_params));
-                            exit;
-                            
-                        }
-                        elseif($this->url_action === "setLanguage"){
-                            call_user_func_array(array($this->url_controller, $this->url_action), array($this->url_params));
-                            exit;
-                        }
-                        elseif($this->url_action === "deleteFeed"){
-                            call_user_func_array(array($this->url_controller, $this->url_action), array($this->url_params));
-                            exit;
-                        }
-                        else{
-                            $contr = new Controller();
-                            $contr->err404();
+                        switch ($this->url_action) {
+                            case "registerNewUser":
+                                call_user_func_array(array($this->url_controller, $this->url_action), array($this->url_params));
+                                break;
+                            case "userLogin":
+                                call_user_func_array(array($this->url_controller, $this->url_action), array($this->url_params));
+                                break;                           
+                            case "setLanguage":
+                                call_user_func_array(array($this->url_controller, $this->url_action), array($this->url_params));
+                                break;                           
+                            case "deleteFeed":
+                                call_user_func_array(array($this->url_controller, $this->url_action), array($this->url_params));
+                                break;                           
+                            case "addFeed":
+                                call_user_func_array(array($this->url_controller, $this->url_action), array($this->url_params));
+                                break;
+                            case "addUserFeed":
+                                call_user_func_array(array($this->url_controller, $this->url_action), array($this->url_params));
+                                break;                           
+                            case "addCategory":
+                                call_user_func_array(array($this->url_controller, $this->url_action), array($this->url_params));
+                                break;  
+                            default:
+                                $contr = new Controller();
+                                $contr->err404();
+                                break;
                         }
                     }
-                    call_user_func_array(array($this->url_controller, $this->url_params), $twig);
+                    if(get_class($this->url_controller) === "FeedReader"){
+                        switch ($this->url_controller) {
+                            case "r":
+                                call_user_func_array(array($this->url_controller, $this->url_action), array($this->url_params));
+                                break;
+                            default:
+                                $contr = new Controller();
+                                $contr->err404();
+                                break;
+                        }
+                    }
+                    //call_user_func_array(array($this->url_controller, $this->url_params), $twig);
                     
                 } else {
                     // If no parameters are given, just call the method without parameters, like $this->home->method();
@@ -115,6 +130,9 @@ class Application
                  
                 if($url[0] === "users"){
                     $this->url_controller = "UserController";
+                }
+                elseif($url[0] === "feeds"){
+                    $this->url_controller = "FeedReader"; 
                 }
             } else {
                  echo "waka";

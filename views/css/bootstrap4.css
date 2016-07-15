@@ -5737,7 +5737,8 @@ ol{
 
 .footer{
      
-    padding: 10px;
+    padding-bottom: 5px;
+    padding-top: 5px;
     background-color: rgb(212,238,94);
 }
 .footer p{

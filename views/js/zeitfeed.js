@@ -9,7 +9,7 @@ $("document").ready(function () {
         $.ajax({
             type: "POST",
             dataType: "",
-            url: "users/performLougout",
+            url: "http://localhost/FeedReader/users/performLougout",
             data: data,
             beforeSend: function () {},
             success: function (data) {
@@ -286,13 +286,16 @@ $("document").ready(function () {
         }
         else {}
     });
-    $(window).scroll(function () {
+    $(window).scroll(function () {  
+        /*
         if ($(window).scrollTop() == $(document).height() - ($(window).height())) {
                 loadHomePage(page, 3);
                 page += 3;
         }
+        */
         // scroll down show sidebar hide topnav
          if($(window).scrollTop() >= $(window).height() - 500){
+
             $("#topnav").fadeOut("fast");
             $(".col-sm-12").removeClass("col-sm-12").addClass("col-sm-10");
             $(".col-sm-0").removeClass("col-sm-0").addClass("col-sm-2").css('visibility','visible').fadeIn("fast");

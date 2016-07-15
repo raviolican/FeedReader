@@ -15,7 +15,13 @@ class Home extends Controller {
     //put your code here 
     public function index($pg){  
         if(isset($_SESSION["email"])){ 
-            echo $pg->render('user_homepage.twig', array_merge($this->siteSettings,['email'=>$_SESSION["email"],"language" => $_SESSION["language"]],  Controller::$lang)); 
+            echo $pg->render('user_homepage.twig', array_merge($this->siteSettings,
+                    [
+                        'email'=>$_SESSION["email"],
+                        "language" => $_SESSION["language"],
+                        "categories"    => $this->model->getUserCategories(),
+                    ],  
+                    Controller::$lang)); 
         }
         else{
             echo $pg->render('index.twig', array_merge($this->siteSettings,["language" => $_SESSION["language"]],  Controller::$lang));

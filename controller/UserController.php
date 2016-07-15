@@ -15,7 +15,12 @@ class UserController extends Controller {
         $loader = new Twig_Loader_Filesystem( $_SERVER['DOCUMENT_ROOT'].'/FeedReader/views');
         $twig = new Twig_Environment($loader);
 
-        echo $twig->render("user_register.twig", array_merge($this->siteSettings,["language" => $_SESSION["language"]],  Controller::$lang));
+        echo $twig->render("user_register.twig", array_merge(
+                $this->siteSettings,
+                [
+                    "language" => $_SESSION["language"]
+                ],  
+                Controller::$lang));
     }
     /**
      * Loads login template
@@ -26,18 +31,34 @@ class UserController extends Controller {
         Twig_Autoloader::register();
         $loader = new Twig_Loader_Filesystem( $_SERVER['DOCUMENT_ROOT'].'/FeedReader/views');
         $twig = new Twig_Environment($loader);
-        echo $twig->render("user_login.twig", array_merge($this->siteSettings,["language" => $_SESSION["language"]],   Controller::$lang));
+        echo $twig->render("user_login.twig", array_merge(
+                $this->siteSettings,
+                [
+                    "language" => $_SESSION["language"]
+                ],
+                Controller::$lang
+             ));
 
     }
     /*
      * Loads user settings template
      */
     public function settings(){ 
+        $this->model->is_NOT_LoggedInPerformRedirect();
         require_once 'vendor/autoload.php';
         Twig_Autoloader::register();
         $loader = new Twig_Loader_Filesystem( $_SERVER['DOCUMENT_ROOT'].'/FeedReader/views');
-        $twig = new Twig_Environment($loader);
-        echo $twig->render("user_settings.twig",array_merge($this->siteSettings,["user_feeds" => $this->model->getUserFeeds(), 'email'=>$_SESSION["email"],"language" => $_SESSION["language"]],  Controller::$lang));
+        $twig = new Twig_Environment($loader); 
+        echo $twig->render("user_settings.twig",array_merge(
+                $this->siteSettings,
+                [   
+                    "user_feeds"    => $this->model->getUserFeeds(), 
+                    "email"         => $_SESSION["email"],
+                    "language"      => $_SESSION["language"],
+                    "categories"    => $this->model->getUserCategories(),
+                ],  
+                Controller::$lang
+            ));
     }
     /**
      * Registers a new user 
@@ -113,10 +134,38 @@ class UserController extends Controller {
         print_r($lang);
         Model::setSessionLanguage($lang["selectLanguage"]);
     }
+    /**
+     * Initiates deleteion of feed
+     * @param array $feedName array with the feedname
+     * @return type
+     */
     public function deleteFeed($feedName){
         if(isset($feedName["key"])){
            $this->model->deleteUserFeed($feedName["key"]);
         }
+        else{
+            echo "Please select a feed first!";
+        }
+    }
+    public function addCategory($data){
+        if(!empty($data["categoryName"])){
+            echo $this->model->setUserCategory($data["categoryName"]);
+        }
+        else{
+            echo "There is something missing!";
+            return;
+        }
+         
+    }
+    public function addUserFeed($feedData){
+        if(!empty($feedData["feedName"]) && !empty($feedData["feedUrl"]) && !empty($feedData["category"])){
+           $this->model->addUserFeed($feedData);
+        }
+        else{
+            echo "There is something missing";
+            return;
+        }
+         
     }
     
     
