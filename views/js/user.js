@@ -90,16 +90,16 @@ $("document").ready(function () {
     });
     $(".del").click(function(){
         var data = $.param({
-            "type" : "delUserFeed",
             "key" : $(this).parent().attr("value")
         });
         $(this).parent().remove();
         $.ajax({
-            type: "POST",
+            type: "GET",
             dataType: "",
-            url: "inc/ajax.php",
+            url: "deleteFeed",
             data: data,
             success: function (data) {
+                alert(data);
                 $("#usinfo").html(data).fadeIn("fast").fadeOut("slow");
             }
         });

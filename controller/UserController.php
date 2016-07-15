@@ -113,6 +113,11 @@ class UserController extends Controller {
         print_r($lang);
         Model::setSessionLanguage($lang["selectLanguage"]);
     }
+    public function deleteFeed($feedName){
+        if(isset($feedName["key"])){
+           $this->model->deleteUserFeed($feedName["key"]);
+        }
+    }
     
     
     

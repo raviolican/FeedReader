@@ -61,6 +61,14 @@ class Application
                             call_user_func_array(array($this->url_controller, $this->url_action), array($this->url_params));
                             exit;
                         }
+                        elseif($this->url_action === "deleteFeed"){
+                            call_user_func_array(array($this->url_controller, $this->url_action), array($this->url_params));
+                            exit;
+                        }
+                        else{
+                            $contr = new Controller();
+                            $contr->err404();
+                        }
                     }
                     call_user_func_array(array($this->url_controller, $this->url_params), $twig);
                     
@@ -78,6 +86,7 @@ class Application
                     // Handling not found error
                     $contr = new Controller();
                     $contr->err404();
+                    exit;
                     
                 }
             }
@@ -85,6 +94,7 @@ class Application
             // Handling not found error
             $contr = new Controller();
             $contr->err404();
+            exit;
         }
     }
 

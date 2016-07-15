@@ -218,4 +218,42 @@ class Model {
         // there we go
         return $FEED_CATEGORIZED;
     }
+    /**
+     * Deletes a feed and updates table
+     * @param type $feedName
+     * @throws Exception
+     */
+    public function deleteUserFeed($feedName) {
+        // First get the feeds and create an assoc array
+        try {
+            $sth = $this->dbh->prepare("SELECT privatefeed FROM users WHERE email = ?");
+            $sth->execute(array($_SESSION["email"]));
+            $result = json_decode($sth->fetchAll()[0]["privatefeed"],true);
+        } catch (Exception $exc) {
+            echo $exc->getTraceAsString();
+        } catch (PDOException $exc) {
+            echo $exc->getMessage();
+        }
+        // unset the perefered feedname in the array
+        unset($result[$feedName]);
+        // creating json
+        $newJSON = json_encode($result);
+        
+        
+        // updatiing the clolumn
+        try {
+            $sth = $this->dbh->prepare("UPDATE users SET privatefeed=? WHERE email=?");
+            $affected = $sth->execute(array($newJSON,$_SESSION["email"]));
+            if($affected === 1){
+                echo "success";
+            }
+            else{
+                throw new Exception("Error: Couldn't update userdata");
+            }
+        } catch (Exception $exc) {
+            echo $exc->getTraceAsString();
+        } catch (PDOException $exc){
+            echo $exc->getTraceAsString();
+        }
+    }
 }
