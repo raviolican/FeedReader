@@ -75,7 +75,7 @@ class Application
                         }
                     }
                     if(get_class($this->url_controller) === "FeedReader"){
-                        switch ($this->url_controller) {
+                        switch ($this->url_action) {
                             case "r":
                                 call_user_func_array(array($this->url_controller, $this->url_action), array($this->url_params));
                                 break;
@@ -100,7 +100,7 @@ class Application
                 else {
                     // Handling not found error
                     $contr = new Controller();
-                    $contr->err404();
+                    $contr->errorPage(404,Controller::$lang["SITE_NOT_FOUND"] );
                     exit;
                     
                 }
@@ -108,7 +108,7 @@ class Application
         } else {
             // Handling not found error
             $contr = new Controller();
-            $contr->err404();
+            $contr->errorPage(404,Controller::$lang["SITE_NOT_FOUND"] );
             exit;
         }
     }
@@ -118,6 +118,7 @@ class Application
      */
     private function splitUrl()
     {
+        
         if (isset($_GET['url'])) {
             // split URL
             $url = trim($_GET['url'], '/');
@@ -135,19 +136,20 @@ class Application
                     $this->url_controller = "FeedReader"; 
                 }
             } else {
-                 echo "waka";
                 $this->url_controller = NULL;
             }
             $this->url_action = isset($url[1]) ? $url[1] : null;
-
+            
             // Remove controller and action from the split URL
             unset($url[0], $url[1]);
             
             // Rebase array keys and store the URL params
-            array_shift($_GET);
-            $this->url_params = $_GET;
-
+            array_shift($_GET); 
             
+            $this->url_params = !empty($_GET) ? $_GET : $url[2]; 
+            
+            
+            //$this->url_params = $_GET;
             #echo 'Controller: ' . $this->url_controller . '<br>';
             # echo 'Action: ' . $this->url_action . '<br>';
             #echo 'Parameters: ' . print_r($this->url_params, true) . '<br>';

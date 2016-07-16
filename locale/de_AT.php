@@ -44,7 +44,7 @@ $lang["REGISTER"] = "Registrieren";
 $lang["LOGIN"] = "Einloggen";
 $lang["HOMEPAGE"] = "Startseite";
 /*
- * Registration form
+ * Registration $ login form
  */
 $lang["BTN_REGISTER"] = "Registrieren";
 $lang["BTN_LOGIN"] = "Einloggen";
@@ -65,7 +65,8 @@ $lang["REGISTER_INFORMATION"] = "Anmeldung nach der Registration sofort "
 $lang["ERR404MSG"] = "Hier ist absolut garnichts";
 $lang["WELCOME"] = "Willkommen";
 
-
+$lang["SITE_NOT_FOUND"] = "Die angeforderte Seite konnte nicht gefunden werden.";
+$lang["NO_FEEDS_FOUND"] = "In dieser Kategorie wurden keine feeds gefunden.";
 
 Controller::$lang = $lang;
         

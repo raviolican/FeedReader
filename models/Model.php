@@ -392,4 +392,71 @@ class Model {
      *                         _._ FEED READER _._
      * =========================================================================
      */
+    public function getCategoryFeeds($catid){
+        $result = $this->db_selectUserFeeds();
+        //print_r($resul);
+        return $result;
+    }
+    public function fetchFeeds($feeds,$start,$end){
+        // Iterlating over each key
+        $temp = array();
+        foreach ($feeds as $key => $value) {
+           
+            (array) $temp = array_merge((array) $temp, (array) $this->createJSON($value["url"], "test"));
+        }
+        usort($temp, function($b, $a) {
+            return strtotime($a['pubDate']) - strtotime($b['pubDate']);
+        });
+        if ($start != "na") {
+            $temp = array_slice($temp, $start, $end);
+            return json_encode($temp);
+        } else {
+            return json_encode($temp);
+        }
+    }
+    
+    private function createJSON($preJ, $feedName) {
+        $val = array();
+        $chi = array();
+        $rss = simplexml_load_file($preJ);
+        $t = 0;
+        if (isset($rss->item)) {
+            $ARRAY = $rss->item;
+        } else {
+            $ARRAY = $rss->channel->item;
+        }
+        foreach ($ARRAY as $item)
+            if ($t++ < 10) {
+                if ($feedName != "") {
+                    $dc = $item->children("http://purl.org/dc/elements/1.1/");
+                    if (isset($dc->date)) {
+                        $val[$t] = array(
+                            "link" => $item->link,
+                            "title" => (string)$item->title[0],
+                            "desc" => $item->description,
+                            "pubDate" => date("D, Y-m-d H:i", strtotime((string) $dc->date)),
+                            "name" => (string) $rss->channel->title,
+                            "tag" => $feedName
+                        );
+                    } else {
+                        $val[$t] = array(
+                            "link" => $item->link,
+                            "title" => (string)$item->title[0],
+                            'desc' =>  (string) $item->description[0],
+                            "pubDate" => date("D, d-m-Y H:i", strtotime((string) $item->pubDate)),
+                            //"pubDate" => (string)$item->pubDate,
+                            "name" => (string) $rss->channel->title,
+                            "tag" => $feedName
+                        );
+                    }
+                } else {
+                    
+                }
+            }
+            else{
+                break;
+            }
+        return $val;
+    }
+
 }

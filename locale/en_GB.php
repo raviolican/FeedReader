@@ -65,6 +65,8 @@ $lang["REGISTER_INFORMATION"] = "Login after registration possible immediately,"
 $lang["ERR404MSG"] = "There is exactly nothing.";
 $lang["WELCOME"] = "Welcome";
 
+$lang["SITE_NOT_FOUND"] = "Requested page not found on server";
+$lang["NO_FEEDS_FOUND"] = "Couldn't find any feeds in this category.";
 
 Controller::$lang = $lang;
 ?>

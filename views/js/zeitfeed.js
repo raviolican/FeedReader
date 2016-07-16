@@ -1,9 +1,10 @@
 $("document").ready(function () {
     var top = $('#sidebar').offset(),
-     start = $(document).height(),
-    page = 0,
-    myPage = "",
-    loading = false;
+        start = $(document).height(),
+        category = $("#cat").val(),
+        page = 0,
+        myPage = "",
+        loading = false;
     $("#logout").click(function () {
         var data = "&type=logout";
         $.ajax({
@@ -33,11 +34,11 @@ $("document").ready(function () {
         window.location = url;
     });
     $(".req").click(startPage);
-    
+    /*
     $(window).load(function () {
         loadHomePage(page, 3);
         page = 3;
-    });
+    });*/
     $("#selectLanguage").on("change", function(){
        data = $(this).serialize();
        $.ajax({
@@ -50,26 +51,33 @@ $("document").ready(function () {
            }
        });
     });
-    function loadHomePage(start, end) {
-        myPage = "home";
+    
+    function loadInf(start, end) {
+        
         if (loading) {
-            return;
+            //return;
         }
+         
         if ($(".wan").length > 0) {
             $(".modal_load").fadeIn("slow");
-            $("#home").closest("li").addClass("active").siblings().removeClass('active');;
+            
+            $("#home").closest("li").addClass("active").siblings().removeClass('active');
+            
             data = $(this).serialize() + "&" + $.param({
-                "action": "Home"
-                , "start": start
+                
+                "category" : category,
+                "start": start
                 , "end": end
-            });
+            }); 
+            
+            
             loading = true;
             $.ajax({
-                type: "POST",
+                type: "GET",
                 dataType: "json",
-                url: "inc/ajax.php",
+                url: "",
                 data: data,
-                success: function (data) {
+                success: function (data) {  
                     if (data == "") {
                         $(".modal_load").html("").fadeOut("slow").html("Alles geladen!").fadeIn("slow").fadeOut("slow");
                         exit();
@@ -77,21 +85,18 @@ $("document").ready(function () {
                     $.each(data, function (i, item) {
                         $(".modal_load").html("").fadeOut("slow");
                         if (typeof item.desc[0] != "undefined") {
-                            if (item.desc[0].length >= 160) {
-                                $("#wan").append('<div class="card" style="max-height: 10;"><div class="card-block"><a href="' + data[i].link[0] + '"target="_blank"><h4 class="card-title"target="_blank">' + data[i].titlee[0] + '</h4></a><p class="card-text">' + data[i].desc[0] + '</p><p class="card-text"><small class="text-muted">' + data[i].pubDate + ' // ' + data[i].namee + '</small></p></div><div class="card-footer text-muted" ><b>' + data[i].tag + '</b></div></div>');
-                            }
-                            else {
-                                $("#wan").append('<div class="card" style="max-height: 10;"><div class="card-block"><a href="' + data[i].link[0] + '"target="_blank"><h4 class="card-title"target="_blank">' + data[i].titlee[0] + '</h4></a><p class="card-text">' + data[i].desc[0] + '</p><p class="card-text"><small class="text-muted">' + data[i].pubDate + ' // ' + data[i].namee + '</small></p></div><div class="card-footer text-muted" ><b>' + data[i].tag + '</b></div></div>');
-                            }
+                                $("#wan").append('<div class="card" style="max-height: 10;"><div class="card-block"><a href="' + data[i].link[0] + '"target="_blank"><h4 class="card-title"target="_blank">' + data[i].title + '</h4></a><p class="card-text">' + data[i].desc + '</p><p class="card-text"><small class="text-muted">' + data[i].pubDate + ' // ' + data[i].name + '</small></p></div><div class="card-footer text-muted" ><b>' + data[i].tag + '</b></div></div>');
+                           
                         }
                         else {
-                            $("#wan").append('<div class="card" style="max-height: 300;"><div class="card-block"><a href="' + data[i].link[0] + '"target="_blank"><h4 class="card-title">' + data[i].titlee[0] + '</h4></a><p class="card-text">Nicht Angegeben</p><p class="card-text"><small class="text-muted">' + data[i].pubDate + ' // ' + data[i].namee + '</small></p></div><div class="card-footer text-muted" ><b>' + data[i].tag + '</b></div></div>');
+                            $("#wan").append('<div class="card" style="max-height: 300;"><div class="card-block"><a href="' + data[i].link[0] + '"target="_blank"><h4 class="card-title">' + data[i].titlee + '</h4></a><p class="card-text">Nicht Angegeben</p><p class="card-text"><small class="text-muted">' + data[i].pubDate + ' // ' + data[i].namee + '</small></p></div><div class="card-footer text-muted" ><b>' + data[i].tag + '</b></div></div>');
                         }
                         loading = false;
                         $(window).unbind('scroll', function () {});
                     });
                 },
                 error: function (xhr, textStatus, errorThrown) {
+                    alert(data);
                 }
             });
             return false;
@@ -287,12 +292,12 @@ $("document").ready(function () {
         else {}
     });
     $(window).scroll(function () {  
-        /*
+        
         if ($(window).scrollTop() == $(document).height() - ($(window).height())) {
-                loadHomePage(page, 3);
+                loadInf(page, 3);
                 page += 3;
         }
-        */
+        
         // scroll down show sidebar hide topnav
          if($(window).scrollTop() >= $(window).height() - 500){
 

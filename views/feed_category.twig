@@ -22,8 +22,33 @@
         <div class="col-sm-12 " id="maincon">
             <div class="card-deck-wrapper">
                 <div class="wan" id="wan">
-                    <h1>ejejej</h1>
-                    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+                    {% if feeds is defined%}
+                        <input type="hidden" id="cat" value="{{ category }}">
+                        {% for key,value in feeds %}
+                            <div class="card" style="max-height: 10;">
+                                <div class="card-block">
+                                    <a href="{{ value.link.0 }}"target="_blank">
+                                        <h4 class="card-title"target="_blank">
+                                            {{ value.title }}
+                                        </h4>
+                                    </a>
+                                    <p class="card-text">
+                                        {{ value.desc }}
+                                    </p>
+                                    <p class="card-text">
+                                        <small class="text-muted">
+                                            {{ value.pubDate }} // {{ value.name }}
+                                        </small>
+                                    </p>
+                                </div>
+                                <div class="card-footer text-muted" >
+                                    <b>
+                                        {{ value.tag }}
+                                    </b>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
                     <!-- feeds -->
                 </div>
             </div>
