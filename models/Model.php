@@ -399,20 +399,21 @@ class Model {
     }
     public function fetchFeeds($feeds,$start,$end){
         // Iterlating over each key
-        $temp = array();
-        foreach ($feeds as $key => $value) {
-           
-            (array) $temp = array_merge((array) $temp, (array) $this->createJSON($value["url"], "test"));
-        }
-        usort($temp, function($b, $a) {
-            return strtotime($a['pubDate']) - strtotime($b['pubDate']);
-        });
-        if ($start != "na") {
-            $temp = array_slice($temp, $start, $end);
-            return json_encode($temp);
-        } else {
-            return json_encode($temp);
-        }
+            $temp = array();
+            foreach ($feeds as $key => $value) {
+
+                (array) $temp = array_merge((array) $temp, (array) $this->createJSON($value["url"], "test",$start,$end));
+            }
+            usort($temp, function($b, $a) {
+                return strtotime($a['pubDate']) - strtotime($b['pubDate']);
+            });
+            if ($start != "na") {
+                $temp = array_slice($temp, $start, $end);
+                return json_encode($temp);
+            } else {
+                return json_encode($temp);
+            }
+        
     }
     
     private function createJSON($preJ, $feedName) {
@@ -458,5 +459,5 @@ class Model {
             }
         return $val;
     }
-
 }
+?>

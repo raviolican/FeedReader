@@ -13,7 +13,33 @@
  */
 class FeedReader extends Controller{
     //put your code here
-     
+     public function index(){
+        if(!isset($_SESSION["email"])){
+            $this->errorPage(404,  Controller::$lang["SITE_NOT_FOUND"]);
+            exit;
+        }
+        $my = $this->model->getCategoryFeeds("all");
+        $feeds = $this->model->fetchFeeds($my,1,6);
+        require_once 'vendor/autoload.php';
+        Twig_Autoloader::register();
+        $loader = new Twig_Loader_Filesystem( $_SERVER['DOCUMENT_ROOT'].'/FeedReader/views');
+        $twig = new Twig_Environment($loader);
+        echo $twig->render("feed_category.twig",array_merge(
+        $this->siteSettings,
+                [   
+                    "user_feeds"    => $this->model->getUserFeeds(), 
+                    "email"         => $_SESSION["email"],
+                    "language"      => $_SESSION["language"],
+                    "categories"    => $this->model->getUserCategories(),
+                    "feeds"         => json_decode($feeds,true),
+                    "category"      => "all"
+                ],  
+                Controller::$lang
+            ));
+             
+        
+    }
+    
     public function r($category){
         //  print_r($category);
         $this->model->is_NOT_LoggedInPerformRedirect();
@@ -21,16 +47,21 @@ class FeedReader extends Controller{
         
         if(isset($category["category"])){
              
-            
-            $my = $this->model->getCategoryFeeds($category["category"]);
-            foreach($my AS $key => $value){ 
-                if($value["category"] !== $category["category"])
-                {
-                    unset($my[$key]);
-                }
-                else {
-                }
-            }   
+            if($category["category"] !== "all"){
+                $my = $this->model->getCategoryFeeds($category["category"]);
+                foreach($my AS $key => $value){ 
+                    if($value["category"] !== $category["category"])
+                    {
+                        unset($my[$key]);
+                    }
+                    else {
+                    }
+                }   
+            }
+            else{
+                $my = $this->model->getCategoryFeeds($category["category"]);
+            }
+             
         }
         else{
             $my = $this->model->getCategoryFeeds($category);
@@ -44,11 +75,10 @@ class FeedReader extends Controller{
             }   
         }
  
-        
+        // Check if there are ANY feeds
         if(count($my) <= 0){
             Controller::errorPage(404,"Could'nt find any feeds in this category.");
             exit;
-            //$feeds = NULL;
         }
         
         else{
@@ -64,10 +94,8 @@ class FeedReader extends Controller{
              
         }
         if(!isset($category["start"])){
-            
             require_once 'vendor/autoload.php';
             Twig_Autoloader::register();
-        
             $loader = new Twig_Loader_Filesystem( $_SERVER['DOCUMENT_ROOT'].'/FeedReader/views');
             $twig = new Twig_Environment($loader);
             echo $twig->render("feed_category.twig",array_merge(
@@ -90,3 +118,4 @@ class FeedReader extends Controller{
          
     }
 }
+?>

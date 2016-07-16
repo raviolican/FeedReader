@@ -165,11 +165,6 @@ class UserController extends Controller {
             echo "There is something missing";
             return;
         }
-         
     }
-    
-    
-    
-    
-    
 }
+?>

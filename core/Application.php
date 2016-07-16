@@ -1,5 +1,4 @@
 <?php
-
 class Application
 {
     /** @var null The controller */
@@ -26,11 +25,18 @@ class Application
 
         // check for controller: no controller given ? then load start-page
         if (!$this->url_controller) {
-            require APP . 'controller/Home.php';
+                            
+            if(isset($_SESSION["email"])){  
+               require APP. 'controller/FeedReader.php';
+               $page = new FeedReader();
+               $page->index($twig);
+            }
+            else{
+              require APP . 'controller/Home.php';
             
-            $page = new Home();
-            $page->index($twig);
-
+                $page = new Home();
+                $page->index($twig);  
+            }
         }
         elseif (file_exists(APP . 'controller/' . $this->url_controller . '.php')) {
             // here we did check for controller: does such a controller exist ?
@@ -77,6 +83,9 @@ class Application
                     if(get_class($this->url_controller) === "FeedReader"){
                         switch ($this->url_action) {
                             case "r":
+                                call_user_func_array(array($this->url_controller, $this->url_action), array($this->url_params));
+                                break;
+                            case "":
                                 call_user_func_array(array($this->url_controller, $this->url_action), array($this->url_params));
                                 break;
                             default:
@@ -156,3 +165,4 @@ class Application
         }
     }
 }
+?>

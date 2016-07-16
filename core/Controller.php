@@ -40,20 +40,35 @@ class Controller {
         require 'models/Model.php';
         $this->model = new Model($this->dbh);
     }
-    public  function errorPage($code,$errmsg){
+    public function errorPage($code,$errmsg){
        // $this->model->isLoggedInPerformRedirect();
         require_once 'vendor/autoload.php';
         Twig_Autoloader::register();
         $loader = new Twig_Loader_Filesystem( $_SERVER['DOCUMENT_ROOT'].'/FeedReader/views');
         $twig = new Twig_Environment($loader);
-        echo $twig->render("404.twig", array_merge($this->siteSettings,
+        if(!isset($_SESSION["email"])){
+            echo $twig->render("404.twig", array_merge($this->siteSettings,
                 [
-                    "language"  => $_SESSION["language"],                   
-                    "email"     => $_SESSION["email"],
+                    "language"  => $_SESSION["language"], 
                     "language"  => $_SESSION["language"],
                     "code"      => $code,
                     "errmsg"    => $errmsg
                 ],   
                 Controller::$lang));
+        }
+        else{
+            echo $twig->render("404.twig", array_merge($this->siteSettings,
+                [
+                    "language"  => $_SESSION["language"],                   
+                    "email"     => $_SESSION["email"],
+                    "language"  => $_SESSION["language"],
+                    "code"      => $code,
+                    "errmsg"    => $errmsg,
+                    "categories"    => $this->model->getUserCategories(),
+                ],   
+                Controller::$lang));
+        }
+         
     }
 }
+?>

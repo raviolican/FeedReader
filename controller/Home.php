@@ -14,7 +14,8 @@
 class Home extends Controller {
     //put your code here 
     public function index($pg){  
-        if(isset($_SESSION["email"])){ 
+        if(isset($_SESSION["email"])){
+            header("Location: http://localhost/FeedReader/feeds/");
             echo $pg->render('user_homepage.twig', array_merge($this->siteSettings,
                     [
                         'email'=>$_SESSION["email"],
@@ -28,3 +29,4 @@ class Home extends Controller {
         }
     }
 }
+?>

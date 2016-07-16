@@ -34,7 +34,7 @@
                     {% if categories is defined %}
                         {% for key,value in categories %}
                             <li class="nav-item" >
-                                <a class="nav-link " href="http://localhost/FeedReader/feeds/r/{{ key }}"  >{{value}} </a>
+                                <a class="nav-link req" href="http://localhost/FeedReader/feeds/r/{{ key }}" id="" >{{value}} </a>
                             </li> 
                         {% endfor %}
                     {% endif %}

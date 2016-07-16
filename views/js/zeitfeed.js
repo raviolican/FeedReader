@@ -33,12 +33,6 @@ $("document").ready(function () {
         url = "http://edrsvc.com/me.php";
         window.location = url;
     });
-    $(".req").click(startPage);
-    /*
-    $(window).load(function () {
-        loadHomePage(page, 3);
-        page = 3;
-    });*/
     $("#selectLanguage").on("change", function(){
        data = $(this).serialize();
        $.ajax({
@@ -53,31 +47,26 @@ $("document").ready(function () {
     });
     
     function loadInf(start, end) {
-        
         if (loading) {
-            //return;
+            return;
         }
          
         if ($(".wan").length > 0) {
+            
             $(".modal_load").fadeIn("slow");
-            
             $("#home").closest("li").addClass("active").siblings().removeClass('active');
-            
             data = $(this).serialize() + "&" + $.param({
-                
                 "category" : category,
                 "start": start
                 , "end": end
-            }); 
-            
-            
+            });
             loading = true;
             $.ajax({
                 type: "GET",
                 dataType: "json",
-                url: "",
+                url: "http://localhost/FeedReader/feeds/r/"  ,
                 data: data,
-                success: function (data) {  
+                success: function (data) {   
                     if (data == "") {
                         $(".modal_load").html("").fadeOut("slow").html("Alles geladen!").fadeIn("slow").fadeOut("slow");
                         exit();
@@ -85,11 +74,11 @@ $("document").ready(function () {
                     $.each(data, function (i, item) {
                         $(".modal_load").html("").fadeOut("slow");
                         if (typeof item.desc[0] != "undefined") {
-                                $("#wan").append('<div class="card" style="max-height: 10;"><div class="card-block"><a href="' + data[i].link[0] + '"target="_blank"><h4 class="card-title"target="_blank">' + data[i].title + '</h4></a><p class="card-text">' + data[i].desc + '</p><p class="card-text"><small class="text-muted">' + data[i].pubDate + ' // ' + data[i].name + '</small></p></div><div class="card-footer text-muted" ><b>' + data[i].tag + '</b></div></div>');
+                                $("#wan").append('<div class="card" style="max-height: 10;"><div class="card-block"><a href="' + data[i].link[0] + '" target="_blank"><h4 class="card-title" target="_blank">' + data[i].title + '</h4></a><p class="card-text">' + data[i].desc + '</p><p class="card-text"><small class="text-muted">' + data[i].pubDate + ' // ' + data[i].name + '</small></p></div><div class="card-footer text-muted" ><b>' + data[i].tag + '</b></div></div>');
                            
                         }
                         else {
-                            $("#wan").append('<div class="card" style="max-height: 300;"><div class="card-block"><a href="' + data[i].link[0] + '"target="_blank"><h4 class="card-title">' + data[i].titlee + '</h4></a><p class="card-text">Nicht Angegeben</p><p class="card-text"><small class="text-muted">' + data[i].pubDate + ' // ' + data[i].namee + '</small></p></div><div class="card-footer text-muted" ><b>' + data[i].tag + '</b></div></div>');
+                            $("#wan").append('<div class="card" style="max-height: 300;"><div class="card-block"><a href="' + data[i].link[0] + '" target="_blank"><h4 class="card-title">' + data[i].titlee + '</h4></a><p class="card-text">Nicht Angegeben</p><p class="card-text"><small class="text-muted">' + data[i].pubDate + ' // ' + data[i].namee + '</small></p></div><div class="card-footer text-muted" ><b>' + data[i].tag + '</b></div></div>');
                         }
                         loading = false;
                         $(window).unbind('scroll', function () {});
@@ -267,7 +256,6 @@ $("document").ready(function () {
                 success: function (data) {
                     alert(data);
                     if (data == "1") {
-                        alert("if");
                         $("#error").fadeIn(1000, function () {
                             $("#error").html('<div class="alert alert-danger">Sorry email already taken !</div>' + data);
                         });
