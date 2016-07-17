@@ -1,6 +1,6 @@
 $("document").ready(function () {
     var category = $("#cat").val(),
-        page = 0,
+        page = 6,
         loading = false;
     $("#logout").click(function () {
         var data = "&type=logout";
@@ -43,12 +43,12 @@ $("document").ready(function () {
     });
     
     function loadInf(start, end) {
+         
         if (loading) {
             return;
         }
-         
+        loading = true;
         if ($(".wan").length > 0) {
-            
             $(".modal_load").fadeIn("slow");
             $("#home").closest("li").addClass("active").siblings().removeClass('active');
             data = $(this).serialize() + "&" + $.param({
@@ -56,13 +56,13 @@ $("document").ready(function () {
                 "start": start
                 , "end": end
             });
-            loading = true;
+            
             $.ajax({
                 type: "GET",
                 dataType: "json",
                 url: "http://localhost/FeedReader/feeds/r/"  ,
                 data: data,
-                success: function (data) {   
+                success: function (data) {
                     if (data == "") {
                         $(".modal_load").html("").fadeOut("slow").html("Alles geladen!").fadeIn("slow").fadeOut("slow");
                         exit();
@@ -76,12 +76,13 @@ $("document").ready(function () {
                         else {
                             $("#wan").append('<div class="card" style="max-height: 300;"><div class="card-block"><a href="' + data[i].link[0] + '" target="_blank"><h4 class="card-title">' + data[i].titlee + '</h4></a><p class="card-text">Nicht Angegeben</p><p class="card-text"><small class="text-muted">' + data[i].pubDate + ' // ' + data[i].namee + '</small></p></div><div class="card-footer text-muted" ><b>' + data[i].tag + '</b></div></div>');
                         }
-                        loading = false;
+                        
                         $(window).unbind('scroll', function () {});
                     });
+                    loading = false;page += 6;
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    alert(data);
+                    alert(data);loading = false;
                 }
             });
             return false;
@@ -198,8 +199,8 @@ $("document").ready(function () {
     $(window).scroll(function () {  
         
         if($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
-                loadInf(page, 3);
-                page += 3;
+                loadInf(page, 6);
+
         }
         
         // scroll down show sidebar hide topnav

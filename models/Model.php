@@ -44,7 +44,6 @@ class Model {
     }
     public static function setSessionLanguage($language){
         $_SESSION["language"] = $language;
-        clearstatcache();
     }
     private function __clone() {
     }
@@ -192,7 +191,7 @@ class Model {
         // Selecting user's feeds from the DB
         $sth = $this->dbh->prepare("SELECT privatefeed FROM users WHERE email ='".$_SESSION["email"]."'");
         $sth->execute();
-        // Creating an assoc _ARRAY_ with the feteched result
+        // Creating an assoc _ARRAY_ with the feteched result    ____
         $result = json_decode($sth->fetchAll()[0]["privatefeed"],true);
         
         // Defining a new array to srore it like
@@ -201,7 +200,7 @@ class Model {
         $categorizedArray = array();
         
         foreach ($result as $res => $val) {// </editor-fold>
-                            $categorizedArray[$val["category"]][$res] = $val["category"];
+            $categorizedArray[$val["category"]][$res] = $val["category"];
         }
         
         // Now query the users categories
@@ -259,8 +258,7 @@ class Model {
      */
     public function addUserFeed($feedData){
         // validade the feet by API
-        $valid = $this->validateFeed($feedData["feedUrl"]);
-        if($valid){ // $valid
+        if($this->validateFeed($feedData["feedUrl"])){ // $valid
             $result = $this->db_selectUserFeeds();
             
             // Check for duplicates
@@ -340,14 +338,13 @@ class Model {
           try {
             $sth = $this->dbh->prepare("SELECT categories FROM users WHERE email = ?");
             $obj = $sth->execute(array($_SESSION["email"]));
-            $result = json_decode($sth->fetchAll()[0]["categories"],true);
+            return json_decode($sth->fetchAll()[0]["categories"],true);
             
         } catch (Exception $exc) {
             echo $exc->getTraceAsString();
         } catch (PDOException $exc) {
             echo $exc->getTraceAsString();
         }
-        return $result;
     }
     /**
      * Selects user's feeds and returns them in ARRAY
@@ -357,13 +354,12 @@ class Model {
         try {
             $sth = $this->dbh->prepare("SELECT privatefeed FROM users WHERE email = ?");
             $sth->execute(array($_SESSION["email"]));
-            $result = json_decode($sth->fetchAll()[0]["privatefeed"],true);
+            return json_decode($sth->fetchAll()[0]["privatefeed"],true);
         } catch (Exception $exc) {
             echo $exc->getTraceAsString();
         } catch (PDOException $exc) {
             echo $exc->getMessage();
         }
-        return $result;
     }
     /**
      * Verifiess a valid URL
@@ -392,45 +388,66 @@ class Model {
      *                         _._ FEED READER _._
      * =========================================================================
      */
-    public function getCategoryFeeds($catid){
-        $result = $this->db_selectUserFeeds();
-        //print_r($resul);
-        return $result;
+    /**
+     * Returns an array of all users feeds
+     * @return array
+     */
+    public function getCategoryFeeds(){
+        return $this->db_selectUserFeeds();
     }
-    public function fetchFeeds($feeds,$start,$end){
-        // Iterlating over each key
-            $temp = array();
-            foreach ($feeds as $key => $value) {
-
-                (array) $temp = array_merge((array) $temp, (array) $this->createJSON($value["url"], "test",$start,$end));
-            }
-            usort($temp, function($b, $a) {
-                return strtotime($a['pubDate']) - strtotime($b['pubDate']);
-            });
-            if ($start != "na") {
-                $temp = array_slice($temp, $start, $end);
-                return json_encode($temp);
-            } else {
-                return json_encode($temp);
-            }
+    /**
+     * Generates an array with feeds and slices it to make it infinite
+     * scroll compatible
+     * @param type $feeds     the feeds where we have to fetch from
+     * @param integer $start  where start slicing the array?
+     * @param integer $end    where stop slicing the array
+     * @return string         the JSON with the feeds
+     */
+    public function fetchFeeds($feeds, $start, $end) {
+         
+        $temp = array();
+        // Iterating over each key
+        foreach ($feeds as $key => $value) {
+           $temp = array_merge($temp, $this->createJSON($value["url"], $key));
+        }
         
+        usort($temp, function($b, $a) {
+            return strtotime($a['pubDate']) - strtotime($b['pubDate']);
+        });
+        
+        // Slicing & return
+        $temp = array_slice($temp, $start, $end);
+        return json_encode($temp);
     }
     
+    /**
+     * Loads the FEED Url and creates an array from which is returned
+     * @param strin $preJ       the URL where to fetch from
+     * @param string $feedName  the name of the feed where we fetch from
+     * @return array            returns array with the fetched feeds
+     */
     private function createJSON($preJ, $feedName) {
-        $val = array();
-        $chi = array();
+        // Lets load the XML Site first
         $rss = simplexml_load_file($preJ);
-        $t = 0;
+        
+
+        // If there is some difference in the xml we need to scope differently
         if (isset($rss->item)) {
             $ARRAY = $rss->item;
         } else {
             $ARRAY = $rss->channel->item;
         }
+        // Define a new array that will be returned
+        $val = array();
+        
+        // So we loop throught n element!
+        $t = -1;
         foreach ($ARRAY as $item)
-            if ($t++ < 10) {
-                if ($feedName != "") {
-                    $dc = $item->children("http://purl.org/dc/elements/1.1/");
+        {
+            if (++$t <= 10) { // 10 
+                if ($feedName !== "") {
                     if (isset($dc->date)) {
+                        $dc = $item->children("http://purl.org/dc/elements/1.1/");
                         $val[$t] = array(
                             "link" => $item->link,
                             "title" => (string)$item->title[0],
@@ -439,7 +456,7 @@ class Model {
                             "name" => (string) $rss->channel->title,
                             "tag" => $feedName
                         );
-                    } else {
+                    } else { 
                         $val[$t] = array(
                             "link" => $item->link,
                             "title" => (string)$item->title[0],
@@ -451,12 +468,13 @@ class Model {
                         );
                     }
                 } else {
-                    
+                    continue;
                 }
             }
             else{
                 break;
             }
+        }
         return $val;
     }
 }

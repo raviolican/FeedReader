@@ -69,6 +69,6 @@ $lang["SITE_NOT_FOUND"] = "Die angeforderte Seite konnte nicht gefunden werden."
 $lang["NO_FEEDS_FOUND"] = "In dieser Kategorie wurden keine feeds gefunden.";
 
 Controller::$lang = $lang;
-        
+#apc_store("lang_de_AT", $lang)
         
 ?>
