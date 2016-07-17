@@ -1,9 +1,6 @@
 $("document").ready(function () {
-    var top = $('#sidebar').offset(),
-        start = $(document).height(),
-        category = $("#cat").val(),
+    var category = $("#cat").val(),
         page = 0,
-        myPage = "",
         loading = false;
     $("#logout").click(function () {
         var data = "&type=logout";
@@ -24,8 +21,7 @@ $("document").ready(function () {
         });
         return false;
     });
-    $(".wan").on("click", ".btn", function () {
-        var $this = $(this);
+    $(".wan").on("click", ".btn", function () { 
         $(this).parent().parent().find("#jdhsg").collapse("toggle");
     });
     $("#username").click(function () {
@@ -91,85 +87,6 @@ $("document").ready(function () {
             return false;
         }
     }
-    function startPage() {
-         
-        $(".modal_load").fadeIn("slow");
-        var idName = $(this).attr('id');
-        switch (idName) {
-        case 'news':
-            var data = {
-                "action": "News"
-            };
-            myPage = "news";
-            break;
-        case 'sport':
-            var data = {
-                "action": "Sport"
-            };
-            myPage = "sport";
-            break;
-        case 'wirtschaft':
-            var data = {
-                "action": "Wirtschaft"
-            };
-            myPage = "wirtschaft";
-            break;
-        case 'geld':
-            var data = {
-                "action": "Geld"
-            };
-            break;
-            myPage = "geld";
-        case 'web':
-            var data = {
-                "action": "Web"
-            };
-            myPage = "web";
-            break;
-        case 'schlagzeilen':
-            var data = {
-                "action": "Schlagzeilen"
-            };
-            myPage = "schlagzeilen";
-            break;
-        case 'home':
-            var data = {
-                "action": "Home"
-            };
-            myPage = "home";
-            break;
-        default:
-            var data = {
-                "action": $(this).attr('id')
-            };
-                myPage = $(this).attr('id');
-        }
-        $(this).parent().addClass('active').siblings().removeClass('active');
-        data = $(this).serialize() + "&" + $.param(data);
-        $.ajax({
-            type: "POST",
-            dataType: "json", //json
-            url: "inc/ajax.php",
-            data: data,
-            success: function (data) {
-                $("#wan,.modal_load").html("").fadeOut("slow");
-                $.each(data, function (i, item) {
-                    if (typeof item.desc[0] != "undefined") {
-                        if (item.desc[0].length >= 160) {
-                            $("#wan").append('<div class="card"><div class="card-block"><a href="' + data[i].link[0] + '"target="_blank"><h4 class="card-title">' + data[i].titlee[0] + '</h4></a><p class="card-text">' + data[i].desc[0] + '</p><p class="card-text"><small class="text-muted">' + data[i].pubDate + ' // ' + data[i].namee + '</small></p></div><div class="card-footer text-muted" ><b>' + data[i].tag + '</b></div></div>').hide().fadeIn("slow");
-                        }
-                        else {
-                            $("#wan").append('<div class="card"><div class="card-block"><a href="' + data[i].link[0] + '" target="_blank"><h4 class="card-title">' + data[i].titlee[0] + '</h4></a><p class="card-text">' + data[i].desc[0] + '</p><p class="card-text"><small class="text-muted">' + data[i].pubDate + ' // ' + data[i].namee + '</small></p></div><div class="card-footer text-muted" ><b>' + data[i].tag + '</b></div></div>').hide().fadeIn("slow");
-                        }
-                    }
-                    else {
-                        $("#wan").append('<div class="card"><div class="card-block"><a href="' + data[i].link[0] + '"target="_blank"><h4 class="card-title">' + data[i].titlee[0] + '</h4></a><p class="card-text">Nicht Angegeben</p><p class="card-text"><small class="text-muted">' + data[i].pubDate + ' // ' + data[i].namee + '</small></p></div><div class="card-footer text-muted" ><b>' + data[i].tag + '</b></div></div>').hide().fadeIn("slow");
-                    }
-                });
-            }
-        });
-        return false;
-    };
     $("#login-form").validate({
         rules: {
             loginInputEmail: {
@@ -188,7 +105,6 @@ $("document").ready(function () {
         }
     });
     $("#loginBTN").click(function () {
-        
         if ($("#login-form").valid()) {
             var data = $("#login-form").serialize();
             $.ajax({
@@ -281,20 +197,20 @@ $("document").ready(function () {
     });
     $(window).scroll(function () {  
         
-        if ($(window).scrollTop() == $(document).height() - ($(window).height())) {
+        if($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
                 loadInf(page, 3);
                 page += 3;
         }
         
         // scroll down show sidebar hide topnav
-         if($(window).scrollTop() >= $(window).height() - 500){
+        if($(window).scrollTop() >= $(window).height() - 500){
 
             $("#topnav").fadeOut("fast");
             $(".col-sm-12").removeClass("col-sm-12").addClass("col-sm-10");
             $(".col-sm-0").removeClass("col-sm-0").addClass("col-sm-2").css('visibility','visible').fadeIn("fast");
         }
         //reached top
-         if ($(window).scrollTop() == 0) {
+        else if ($(window).scrollTop() === 0) {
             $("#topnav").fadeIn("fast");
             $(".col-sm-2").removeClass("col-sm-2").addClass("col-sm-0").css('visibility','hidden').fadeOut("fast");
             $(".col-sm-10").removeClass("col-sm-10").addClass("col-sm-12");
